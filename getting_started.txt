@@ -3,11 +3,12 @@ Getting started
 a. Pre-conditions
 1. Ensure git is installed
 
-2. Ensure conda is installed
+2. ensure homebrew installed,  this is achievable on homebrew webpage
 
 3. ensure pip is installed ( should be included with anaconda or miniconda)
 
-4. ensure homebrew installed,  this is achievable on homebrew webpage
+4. if conda not installed: "% conda --version" will return an error
+4.0.1. run % brew install --cask anaconda
 
 1. Git
 
