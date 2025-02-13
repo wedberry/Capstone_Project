@@ -1,0 +1,47 @@
+Getting started
+
+a. Pre-conditions
+1. Ensure git is installed
+
+2. Ensure conda is installed
+
+3. ensure pip is installed ( should be included with anaconda or miniconda)
+
+4. ensure homebrew installed,  this is achievable on homebrew webpage
+
+1. Git
+
+a. Open a terminal (or use the terminal in VS Code) and navigate to a folder where you want to clone the project.
+
+b. Run the following command to clone the repository:
+        $ git clone https://github.com/wedberry/capstone_project/
+
+c. Navigate into the cloned project directory:
+        $ cd capstone_project
+
+
+
+
+II. Conda
+
+
+a. Ensure conda is installed 
+        $ conda --version
+
+b. Create conda env
+        $ conda create -n cc_connect python=3.12
+
+c. activate environment
+        $ conda activate cc_connect
+
+d. Install the required dependencies from requirements.txt:
+        $ pip install -r requirements.txt
+
+e. ensure npm is installed: npm -v
+
+f. if npm not installed type % brew install npm
+
+
+III. Initial Run
+
+
