@@ -45,4 +45,5 @@ f. if npm not installed type % brew install npm
 
 III. Initial Run
 
+% python run.py
 
