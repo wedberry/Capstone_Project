@@ -30,10 +30,10 @@ a. Ensure conda is installed
         $ conda --version
 
 b. Create conda env
-        $ conda create -n cc_connect python=3.12
+        $ conda create -n traction python=3.12
 
 c. activate environment
-        $ conda activate cc_connect
+        $ conda activate traction
 
 d. Install the required dependencies from requirements.txt:
         $ pip install -r requirements.txt
