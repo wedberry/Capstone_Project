@@ -40,7 +40,7 @@ d. Install the required dependencies from requirements.txt:
 
 e. ensure npm is installed: npm -v
 
-f. if npm not installed type % brew install npm
+f. if npm not installed type % brew install node
 
 
 III. Initial Run
