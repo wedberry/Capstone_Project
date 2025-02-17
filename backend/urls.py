@@ -30,5 +30,5 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
     # Register endpoint
-    path('api/register/', views.RegisterView.as_view(), name='register'),
+    # path('api/register/', views.RegisterView.as_view(), name='register'),
 ]
