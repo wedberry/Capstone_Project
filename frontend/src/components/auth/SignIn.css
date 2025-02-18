@@ -1,0 +1,173 @@
+/* For the entire Sign-In page (Found in SignIn.jsx) */ 
+.sign-in-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Container for login in box (found in SignIn.jsx) */
+.sign-in-content {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  padding: 40px;
+}
+
+/* Right column */
+.right-column {
+  width: 50%;
+  background-color: #0072BC;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Add decorative circles */
+.right-column::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  top: -200px;
+  right: -200px;
+  animation: float1 15s ease-in-out infinite;
+}
+
+.right-column::after {
+  content: '';
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  bottom: -100px;
+  left: -100px;
+  animation: float2 12s ease-in-out infinite;
+}
+
+/* Add a third bubble */
+.right-column .bubble {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 50%;
+  top: 50%;
+  right: 10%;
+  animation: float1 18s ease-in-out infinite;
+  animation-delay: -5s;
+}
+
+/* Welcome text container */
+.welcome-text {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* Welcome text */
+.welcome-text h1 {
+  font-size: 32px;
+  color: #1e3c72;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Buttons, password and username styling */
+.login-form-container {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 30px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Form group styling */
+.username-password {
+  margin-bottom: 24px;
+}
+
+.username-password label {
+  display: block;
+  text-transform: uppercase;
+  font-size: 14px;
+  color: #1e3c72;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+/* Input */
+.username-password input {
+  width: 93%;
+  padding: 12px;
+  border: 2px solid #e1e5ee;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.username-password input:focus {
+  outline: none;
+  border-color: #1e3c72;
+}
+
+.username-password input::placeholder {
+  color: #a0a0a0;
+}
+
+/* Login button */
+.login-button {
+  width: 100%;
+  padding: 14px;
+  background-color: #1e3c72;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: #2a5298;
+}
+
+/* Add Animations */
+@keyframes float1 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-30px, 20px) scale(1.1);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes float2 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(30px, -20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
