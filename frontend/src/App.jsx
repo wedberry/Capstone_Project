@@ -3,6 +3,7 @@ import SignIn from './components/auth/SignIn.jsx';
 import AthleteHome from './components/dashboards/AthleteHome';
 import TrainerHome from './components/dashboards/TrainerHome';
 import CoachHome from './components/dashboards/CoachHome';
+import SignUpPage from './components/auth/SignUpPage';
 import './components/auth/SignIn.css';
 
 function App() {
@@ -10,6 +11,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<SignIn />} />
+        <Route path="/register" element={<SignUpPage/>} />
         <Route path="/athlete/dashboard" element={<AthleteHome />} />
         <Route path="/trainer/dashboard" element={<TrainerHome />} />
         <Route path="/coach/dashboard" element={<CoachHome />} />
