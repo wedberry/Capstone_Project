@@ -3,7 +3,6 @@
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); /* Rich blue gradient background */
 }
 
 /* Container for login in box (found in SignIn.jsx) */
@@ -127,6 +126,7 @@
 
 .username-password input::placeholder {
   color: #a0a0a0;
+  font-size: 14px;
 }
 
 /* Login button */
@@ -171,4 +171,43 @@
   100% {
     transform: translate(0, 0) scale(1);
   }
+}
+
+/* All for sign up container and sign up styling */
+/* Sign up container styling */
+
+.sign-up-container {
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  padding-top: 10px;
+}
+
+.no-acc-text {
+  margin-right: 10px;
+}
+
+/* Sign up text and link styling */
+.sign-up-text {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.sign-up-link {
+  color: #1e3c72;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 16px;
+  border: 2px solid #1e3c72;
+  border-radius: 4px;
+  transition: all .3s ease;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.sign-up-link:hover {
+  background-color: #1e3c72;
+  color: white;
 }

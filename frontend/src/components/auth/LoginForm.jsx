@@ -12,6 +12,7 @@ const LoginForm = () => {
     password: ''
   });
 
+
   // Handles any changes done to the form while
   // Keeping track of the intial
   const handleChange = (e) => {
@@ -60,11 +61,11 @@ const LoginForm = () => {
       <form onSubmit={handleSubmit}>
         <div className="username-password">
           <label htmlFor="username">USERNAME</label>
-          <input type="text" id="username" name="username" value={formData.username} onChange={handleChange} required placeholder="Rollins Email"/>
+          <input type="text" id="username" name="username" value={formData.username} onChange={handleChange} required placeholder="ROLLINS EMAIL"/>
         </div>
         <div className="username-password">
           <label htmlFor="password">PASSWORD</label>
-          <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} required placeholder="Password"/>
+          <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} required placeholder="PASSWORD"/>
         </div>
         <button type="submit" className="login-button">LOG IN</button>
       </form>
