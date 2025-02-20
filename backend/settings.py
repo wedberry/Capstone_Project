@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'athletes',
     'trainers',
     'coaches',
+    'users',
 ]
 
 # MIDDLEWARE = [
