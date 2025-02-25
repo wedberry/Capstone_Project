@@ -6,18 +6,16 @@ import SignUpPage from "./components/auth/SignUpPage";
 import AthleteHome from "./components/dashboards/AthleteHome";
 import TrainerHome from "./components/dashboards/TrainerHome";
 import CoachHome from "./components/dashboards/CoachHome";
-import "./components/auth/SignIn.css";
-
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Routes */}
+        {/* 🔓 Public Routes */}
         <Route path="/sign-in" element={<SignInPage />} />
         <Route path="/sign-up" element={<SignUpPage />} />
 
-        {/* Protected Routes (Require Authentication) */}
+        {/* 🔐 Protected Routes (Require Authentication) */}
         <Route
           path="/athlete/dashboard"
           element={
@@ -43,7 +41,7 @@ function App() {
           }
         />
 
-        {/* Redirect Logged-Out Users */}
+        {/* 🚫 Redirect Logged-Out Users to Sign-In */}
         <Route
           path="/protected"
           element={
@@ -53,7 +51,7 @@ function App() {
           }
         />
 
-        {/* Default Route: Redirect to Sign-In */}
+        {/* 🔀 Default Route - Redirect to Sign-In */}
         <Route path="/" element={<SignInPage />} />
       </Routes>
     </Router>
