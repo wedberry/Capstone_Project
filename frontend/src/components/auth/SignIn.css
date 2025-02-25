@@ -211,3 +211,16 @@
   background-color: #1e3c72;
   color: white;
 }
+
+.login-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+}
+.sign-up-box {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}

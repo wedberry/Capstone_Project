@@ -1,8 +1,8 @@
 import React from 'react';
-import LoginForm from './LoginForm';
-import SignUpBox from './SignUpBox';
-// SignIn Component grabing loginForm structure
-const SignIn = () => {
+import { SignIn } from "@clerk/clerk-react";
+import "./SignIn.css";
+
+const SignInPage = () => {
   return (
     <div className="sign-in-container">
       <div className="sign-in-content">
@@ -10,10 +10,7 @@ const SignIn = () => {
           <h1>Welcome to</h1>
           <h1>Traction</h1>
         </div>
-        <LoginForm />
-        <div className="sign-up-container">
-          <SignUpBox />
-        </div>
+        <SignIn />  {/* Only Sign-In should be here */}
       </div>
       <div className="right-column">
         <div className="bubble"></div>
@@ -22,4 +19,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn; 
+export default SignInPage;
