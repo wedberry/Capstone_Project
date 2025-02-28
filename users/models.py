@@ -8,10 +8,17 @@ class CustomUser(AbstractUser):
         ('athlete', 'Athlete'),
         ('coach', 'Coach'),
     )
+    clerk_id = models.CharField(max_length=255, unique=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='athlete')
+    phone = models.BigIntegerField(blank=True, null=True, default=1234567890)
+
+    """
+    Django AbstractUser provides the following built in fields
+    username, password, first_name, last_name, email
+    """
 
     def __str__(self):
-        return f"{self.username} ({self.role})"
+        return f"{self.first_name} ({self.last_name})"
 
 class Trainer(models.Model):
     """Trainer model extending CustomUser."""
