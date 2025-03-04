@@ -4,14 +4,9 @@ from django.views.decorators.http import require_http_methods
 import json
 from .models import CustomUser
 
-import logging
-logger = logging.getLogger(__name__)
-
 @csrf_exempt
 @require_http_methods(["GET", "OPTIONS"])
-def check_user(request, clerk_id):
-    
-    logger.info(f"Received request for clerk_id: {clerk_id}")
+def check_user(request, clerk_id):    
     user_queryset = CustomUser.objects.filter(clerk_id=clerk_id)
     exists = user_queryset.exists()
     
@@ -20,6 +15,25 @@ def check_user(request, clerk_id):
 
     # Don't manually set CORS headers here, let middleware handle it
     return JsonResponse({"role": role, "exists": exists})
+
+@csrf_exempt
+@require_http_methods(["GET", "OPTIONS"])
+def get_user(request, clerk_id):
+
+    try:
+        user = CustomUser.objects.get(clerk_id=clerk_id)
+        exists = user.clerk_id
+
+        first_name = user.first_name
+        last_name = user.last_name
+
+        role = user.role
+
+        return JsonResponse({'exists': exists, 'first_name': first_name, 'last_name': last_name, 'role': role})
+    
+    except Exception as e:
+        return JsonResponse({"error": f"{e}"}, status=400)
+
 
 @csrf_exempt
 def create_user(request):
