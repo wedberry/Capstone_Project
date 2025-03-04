@@ -4,12 +4,17 @@
     "private": true,
     "dependencies": {
         "@clerk/clerk-react": "^5.23.0",
+        "@radix-ui/react-slot": "^1.1.2",
+        "@shadcn/ui": "^0.0.4",
         "axios": "^1.7.9",
+        "class-variance-authority": "^0.7.1",
         "cra-template": "1.2.0",
+        "lucide-react": "^0.477.0",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "react-router-dom": "^7.1.5",
         "react-scripts": "5.0.1",
+        "tailwind-variants": "^0.3.1",
         "web-vitals": "^4.2.4"
     },
     "scripts": {

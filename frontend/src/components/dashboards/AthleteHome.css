@@ -1,0 +1,483 @@
+/* Main container */
+.athlete-dashboard {
+    min-height: 100vh;
+    background-color: #f5f7fa;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+  
+  /* Loading state */
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  
+  .loading-spinner {
+    height: 48px;
+    width: 48px;
+    border-radius: 50%;
+    border: 4px solid #e2e8f0;
+    border-top-color: #3b82f6;
+    animation: spin 1s linear infinite;
+  }
+  
+  .loading-text {
+    margin-top: 16px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #6b7280;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Hero section */
+  .hero-section {
+    background: linear-gradient(to right, #3b82f6, #4f46e5);
+    color: white;
+    padding: 32px 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .hero-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .hero-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .hero-text h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+  }
+  
+  .hero-text p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 4px 0 0 0;
+  }
+  
+  /* Dashboard container */
+  .dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  
+  .section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+  }
+  
+  /* Quick actions */
+  .quick-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  
+  @media (min-width: 640px) {
+    .quick-actions {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  .action-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .action-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .blue-card {
+    border-left: 4px solid #3b82f6;
+  }
+  
+  .green-card {
+    border-left: 4px solid #22c55e;
+  }
+  
+  .red-card {
+    border-left: 4px solid #ef4444;
+  }
+  
+  .action-card-header {
+    padding: 16px 16px 8px 16px;
+  }
+  
+  .action-card-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .action-card-title-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .action-icon-container {
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .blue-icon {
+    background-color: #dbeafe;
+    color: #3b82f6;
+  }
+  
+  .green-icon {
+    background-color: #dcfce7;
+    color: #22c55e;
+  }
+  
+  .red-icon {
+    background-color: #fee2e2;
+    color: #ef4444;
+  }
+  
+  .action-chevron {
+    color: #9ca3af;
+    width: 20px;
+    height: 20px;
+  }
+  
+  .notification-badge {
+    background-color: #ef4444;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+  }
+  
+  .action-description {
+    color: #6b7280;
+    font-size: 14px;
+    margin: 0;
+  }
+  
+  /* Info cards container */
+  .info-cards-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  @media (min-width: 1024px) {
+    .info-cards-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  .info-card {
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+  }
+  
+  .info-card-header {
+    border-bottom: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+    padding: 16px;
+  }
+  
+  .info-card-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .info-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .info-card-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .blue-text {
+    color: #3b82f6;
+  }
+  
+  .red-text {
+    color: #ef4444;
+  }
+  
+  .view-all-button {
+    font-size: 14px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 4px;
+  }
+  
+  .blue-button {
+    color: #3b82f6;
+  }
+  
+  .blue-button:hover {
+    background-color: #eff6ff;
+    color: #2563eb;
+  }
+  
+  .red-button {
+    color: #ef4444;
+  }
+  
+  .red-button:hover {
+    background-color: #fee2e2;
+    color: #dc2626;
+  }
+  
+  .info-card-content {
+    padding: 16px;
+  }
+  
+  /* Appointments list */
+  .appointments-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .appointment-item {
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+  }
+  
+  .appointment-item:hover {
+    background-color: #f9fafb;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .appointment-content {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  
+  .appointment-date {
+    min-width: 48px;
+    padding: 8px;
+    border-radius: 8px;
+    background-color: #dbeafe;
+    color: #1e40af;
+    text-align: center;
+    font-weight: 500;
+  }
+  
+  .date-short {
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+  
+  .date-day {
+    font-size: 14px;
+  }
+  
+  .appointment-details {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .appointment-time {
+    font-weight: 500;
+    margin: 0;
+  }
+  
+  .appointment-trainer {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+  }
+  
+  .details-button {
+    padding: 6px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    background-color: white;
+    color: #4b5563;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .details-button:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+  }
+  
+  /* Notifications list */
+  .notifications-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .notification-item {
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+  
+  .notification-item:hover {
+    background-color: #f9fafb;
+  }
+  
+  .notification-content {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .notification-icon-container {
+    padding: 8px;
+    background-color: #f3f4f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .notification-icon {
+    width: 16px;
+    height: 16px;
+    color: #6b7280;
+  }
+  
+  .notification-text {
+    flex: 1;
+  }
+  
+  .notification-message {
+    margin: 0;
+    font-size: 14px;
+  }
+  
+  .notification-time {
+    margin: 4px 0 0 0;
+    font-size: 12px;
+    color: #9ca3af;
+  }
+  
+  /* Empty state */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    text-align: center;
+  }
+  
+  .empty-state-icon {
+    width: 40px;
+    height: 40px;
+    color: #d1d5db;
+    margin-bottom: 8px;
+  }
+  
+  .empty-state-text {
+    color: #6b7280;
+    font-size: 16px;
+    margin: 0 0 4px 0;
+  }
+  
+  .empty-state-subtext {
+    color: #9ca3af;
+    font-size: 14px;
+    margin: 4px 0 0 0;
+  }
+  
+  .empty-state-button {
+    margin-top: 12px;
+    padding: 8px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    background-color: white;
+    color: #4b5563;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .empty-state-button:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 639px) {
+    .hero-content {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .hero-text h1 {
+      font-size: 24px;
+    }
+    
+    .appointment-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    
+    .details-button {
+      align-self: flex-end;
+    }
+  }
