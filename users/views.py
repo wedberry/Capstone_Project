@@ -42,6 +42,7 @@ def create_user(request):
         if not CustomUser.objects.filter(clerk_id=data["clerk_id"]).exists():
             CustomUser.objects.create(
                 clerk_id=data["clerk_id"],
+                username = data["clerk_id"],
                 email=data["email"],
                 phone=data["phone"],
                 first_name=data["first_name"],
