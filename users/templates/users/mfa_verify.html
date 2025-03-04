@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="auth-container">
+  <h2>Verify Authentication Code</h2>
+  
+  {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  
+  <p>Please enter the 6-digit code from your authenticator app to complete login:</p>
+  
+  <form method="post">
+    {% csrf_token %}
+    
+    <div class="form-group">
+      {{ form.token }}
+      {% if form.token.errors %}
+        <div class="error">{{ form.token.errors }}</div>
+      {% endif %}
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Verify</button>
+  </form>
+</div>
+{% endblock %}
