@@ -4,10 +4,12 @@ import { SignedIn, SignedOut, RedirectToSignIn, useUser } from "@clerk/clerk-rea
 
 import SignInPage from "./components/auth/SignInPage";
 import SignUpPage from "./components/auth/SignUpPage";
+import ClerkPage from "./components/auth/ClerkView"
 import CreateAccountPage from "./components/auth/CreateAccountPage";
 import AthleteHome from "./components/dashboards/AthleteHome";
 import TrainerHome from "./components/dashboards/TrainerHome";
 import CoachHome from "./components/dashboards/CoachHome";
+import CreateTreatmentPlan from "./components/utils/CreateTreatmentPlan";
 
 const ProtectedRoute = ({ element }) => {
   const { user } = useUser();
@@ -36,6 +38,7 @@ function App() {
         {/* 🔓 Public Routes */}
         <Route path="/sign-in" element={<SignInPage />} />
         <Route path="/sign-up" element={<SignUpPage />} />
+        <Route path="/clerk-view" element={<ClerkPage />} />
 
         {/* Account Creation Route */}
         <Route path="/create-account" element={<CreateAccountPage />} />
@@ -57,6 +60,9 @@ function App() {
             </SignedIn>
           }
         />
+
+        <Route path="/create-treatment-plan" element={<CreateTreatmentPlan />} />
+
         <Route
           path="/coach/dashboard"
           element={
