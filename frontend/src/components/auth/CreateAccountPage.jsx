@@ -20,7 +20,7 @@ const AccountCreationPage = () => {
         phone: user.phoneNumbers && user.phoneNumbers.length > 0 
         ? user.phoneNumbers[0].phoneNumber 
         : "",
-        
+
         first_name: user.firstName,
         last_name: user.lastName,
         role: role,
