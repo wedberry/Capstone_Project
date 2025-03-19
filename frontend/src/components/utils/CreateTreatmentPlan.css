@@ -35,14 +35,14 @@
   }
   
   .treatment-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-    gap: 2rem;
-    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column; /* Change from row to column */
+    gap: 24px; /* Space between the cards */
+    width: 100%; /* Ensure full width */
   }
   
   .treatment-card {
-    height: 100%;
+    width: 100%;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
@@ -70,7 +70,8 @@
   }
   
   .data-table td {
-    padding: 0.75rem 1rem;
+    height: 40px;
+    /* padding: 0.5rem 0.75rem; */
     border-bottom: 1px solid #e2e8f0;
     border-right: 1px solid #e2e8f0;
   }
@@ -81,17 +82,38 @@
   
   /* Alternating row colors */
   .data-table tbody tr:nth-child(odd) {
+    height: 20px;
     background-color: #ffffff;
   }
   
   .data-table tbody tr:nth-child(even) {
+    height: 20px;
     background-color: #e9f0f4;
   }
   
   .data-table tr:last-child td {
     border-bottom: none;
   }
-  
+
+  .data-table th:nth-child(1),
+  .data-table td:nth-child(1) {
+    width: 30%; /* Adjust based on preference */
+  }
+
+  .data-table th:nth-child(2),
+  .data-table td:nth-child(2) {
+    width: 11%;
+  }
+
+  .data-table th:nth-child(3),
+  .data-table td:nth-child(3) {
+    width: 50%;
+  }       
+  .data-table th:nth-child(4),
+  .data-table td:nth-child(4) {
+    width: 9%;
+  }    
+
   .empty-table-message {
     text-align: center;
     color: #a0aec0;
@@ -101,14 +123,23 @@
   
   .add-form {
     display: grid;
-    grid-template-columns: 1fr 1fr auto;
-    gap: 0.75rem;
-    margin-top: 1rem;
+    /* Text entry widths */
+    grid-template-columns: minmax(100px, 20%) minmax(80px, 15%) minmax(150px, 45%) auto;
+    gap: 8px;
+    margin-top: 16px;
     align-items: center;
   }
   
   .add-button {
-    white-space: nowrap;
+    background-color: #04AA6D; /* Green */
+    border: 3px;
+    border-radius: 8px;
+    color: white;
+    /* padding: 15px 32px; */
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
   }
   
   .submit-container {
