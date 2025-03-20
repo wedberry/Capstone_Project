@@ -97,7 +97,7 @@
 
   .data-table th:nth-child(1),
   .data-table td:nth-child(1) {
-    width: 30%; /* Adjust based on preference */
+    width: 25%; /* Adjust based on preference */
   }
 
   .data-table th:nth-child(2),
@@ -105,12 +105,12 @@
     width: 11%;
   }
 
-  .data-table th:nth-child(3),
-  .data-table td:nth-child(3) {
-    width: 50%;
+  .data-table th:nth-last-child(2),
+  .data-table td:nth-last-child(2) {
+    width: 40%;
   }       
-  .data-table th:nth-child(4),
-  .data-table td:nth-child(4) {
+  .data-table th:nth-last-child(1),
+  .data-table td:nth-last-child(1) {
     width: 9%;
   }    
 
@@ -121,10 +121,19 @@
     padding: 2rem 0 !important;
   }
   
-  .add-form {
+  .add-form-treatments {
     display: grid;
     /* Text entry widths */
     grid-template-columns: minmax(100px, 20%) minmax(80px, 15%) minmax(150px, 45%) auto;
+    gap: 8px;
+    margin-top: 16px;
+    align-items: center;
+  }
+  
+  .add-form-exercises {
+    display: grid;
+    /* Text entry widths */
+    grid-template-columns: minmax(100px, 25%) minmax(80px, 11%) minmax(150px, 20%) minmax(80px, 50%) auto;
     gap: 8px;
     margin-top: 16px;
     align-items: center;

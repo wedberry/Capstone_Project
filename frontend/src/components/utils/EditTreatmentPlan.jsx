@@ -1,7 +1,6 @@
 import { useUser } from "@clerk/clerk-react";
-import { useState } from "react";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Button, Input } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -10,9 +9,11 @@ import { Calendar } from "../ui/calendar";
 import { ChevronUp, ChevronDown, Trash2 } from "lucide-react";
 import "./CreateTreatmentPlan.css";
 
-export default function TreatmentPlanForm() {
-    const { user } = useUser();
+export default function EditTreatmentPlan() {
+    const { treatment_plan_id } = useParams()
+    const navigate = useNavigate();
 
+    const { user } = useUser();
     const defaultName = user ? `${user.firstName} ${user.lastName}` : ""; // Default trainer name
     const [trainer, setTrainer] = useState(defaultName);
     const [treatment_plan_name, setTreatmentPlanName] = useState("");
@@ -33,9 +34,78 @@ export default function TreatmentPlanForm() {
     const [quantity, setQuantity] = useState("");
     const [treatmentNotes, setTreatmentNotes] = useState("");
 
-    const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
+    const safeJsonParse = (jsonString) => {
+        try {
+            // Replace single quotes with double quotes for strings
+            let cleanedString = jsonString.replace(/'([^']+)'/g, '"$1"');
     
+            // Fix unquoted keys (e.g., { name: 'Squats' }) — this matches keys and adds quotes around them
+            cleanedString = cleanedString.replace(/([a-zA-Z0-9_]+)(?=\s*:)/g, '"$1"');
+    
+            // Parse the cleaned-up string
+            const parsedObject = JSON.parse(cleanedString);
+            return parsedObject;
+        } catch (error) {
+            console.error("Error parsing JSON:", error);
+            return null; // Or handle the error as needed
+        }
+    };
+
+    const fetchTreatmentPlan = async (planId) => {
+        setIsLoading(true);
+
+        try {
+            console.log("Fetching Treatment Plan")
+            const response = await axios.get(`http://127.0.0.1:8000/api/trainers/get-single-treatment-plan/${planId}/`);
+            console.log("Response Data:", response.data)
+            const plan = response.data;
+        
+            setTreatmentPlanName(plan.name);
+            setTrainer(plan.trainer_name);
+            setInjury(plan.injury);
+
+            if (plan.estimated_RTC) {
+                setDate(new Date(plan.estimated_RTC));
+            }
+
+            const detailedPlanJSON = safeJsonParse(plan.detailed_plan);
+            console.log(detailedPlanJSON)
+
+            if (detailedPlanJSON) {
+                const exercisesArray = Object.entries(detailedPlanJSON.exercises || {}).map(([name, { reps, weight, notes }]) => ({
+                    name: name,
+                    reps: reps,
+                    weight: weight,
+                    notes: notes // Adjust if you have notes or additional fields
+                }));
+                
+                const treatmentsArray = Object.entries(detailedPlanJSON.treatments || {}).map(([name, { quantity, notes }]) => ({
+                    name: name,
+                    quantity: quantity,
+                    notes: notes // Adjust if you have notes or additional fields
+                }));
+
+                console.log(exercisesArray)
+                console.log(treatmentsArray)
+
+                setTreatmentPlan({
+                    ...treatmentPlan,
+                    exercises: exercisesArray,
+                    treatments: treatmentsArray,
+                });
+            } else {
+                console.error("Invalid JSON format.");
+            }
+
+        } catch (error) {
+            alert("Failed to load treatment plan.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const addActivity = () => {
         if (activity && reps) {
           setTreatmentPlan(prev => ({
@@ -44,7 +114,6 @@ export default function TreatmentPlanForm() {
           }));
           setActivity("");
           setReps("");
-          setWeight("");
           setActivityNotes("");
         }
       };
@@ -83,7 +152,7 @@ export default function TreatmentPlanForm() {
         }));
     };
 
-      const handleSubmit = async () => {
+      const handleSaveAsNew = async () => {
 
         const exercisesObj = {};
         const treatmentsObj = {};
@@ -114,7 +183,6 @@ export default function TreatmentPlanForm() {
               headers: { "Content-Type": "application/json" },
             });
             alert("Treatment Plan Created Successfully!");
-
             navigate(`/browse-treatment-plans`);
           } catch (error) {
             console.error("Error creating treatment plan:", error);
@@ -122,11 +190,56 @@ export default function TreatmentPlanForm() {
           }
         };
 
+        const handleUpdatePlan = async () => {
+
+            const exercisesObj = {};
+            const treatmentsObj = {};
+    
+            // Iterate exercises array and add to exercises JSON
+            treatmentPlan.exercises.forEach(ex => {
+                exercisesObj[ex.name] = {"name": ex.name, "reps": ex.reps, "weight": ex.weight,"notes": ex.notes}
+            });
+    
+            // Interate treatments array and add to treatments JSON
+            treatmentPlan.treatments.forEach(tr => {
+                treatmentsObj[tr.name] = {"name": tr.name, "quantity": tr.quantity, "notes": tr.notes};
+            });
+    
+            const data = {
+                treatment_plan_id : treatment_plan_id,
+                treatment_plan_name: treatment_plan_name,
+                trainer_name: trainer,
+                injury: injury,
+                estimated_completion: date ? date.toISOString().split("T")[0] : null,
+                detailed_plan: {
+                    exercises: exercisesObj,
+                    treatments: treatmentsObj
+                },
+            };
+    
+            try {
+                await axios.post("http://127.0.0.1:8000/api/trainers/update-treatment-plan/", data, {
+                  headers: { "Content-Type": "application/json" },
+                });
+                alert("Treatment Plan Created Successfully!");
+                navigate(`/browse-treatment-plans`);
+              } catch (error) {
+                console.error("Error creating treatment plan:", error);
+                alert("Failed to create treatment plan.");
+              }
+            };
+
+
         useEffect(() => {
             if (user) {
               setTrainer(`${user.firstName} ${user.lastName}`);
             }
-          }, [user]);
+            if (treatment_plan_id) {
+                fetchTreatmentPlan(treatment_plan_id);
+            } else {
+                console.log("No treatement plan")
+            }
+          }, [user, treatment_plan_id]);
 
 
           return (
@@ -335,11 +448,6 @@ export default function TreatmentPlanForm() {
                                     value={reps} 
                                     onChange={e => setReps(e.target.value)} 
                                 />
-                                <Input
-                                    placeholder={"Weight"}
-                                    value={weight}
-                                    onChange={e => setWeight(e.target.value)}
-                                />
                                 <Input 
                                     placeholder="Notes (optional)" 
                                     value={activityNotes} 
@@ -355,8 +463,11 @@ export default function TreatmentPlanForm() {
                 </div>
     
                 <div className="submit-container">
-                    <Button onClick={handleSubmit} className="submit-button">
-                        Submit Treatment Plan
+                    <Button onClick={handleSaveAsNew} className="submit-button">
+                        Save as New Plan
+                    </Button>
+                    <Button onClick={handleUpdatePlan} className="submit-button">
+                        Update Treatment Plan
                     </Button>
                 </div>
             </div>

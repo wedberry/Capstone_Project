@@ -10,6 +10,8 @@ import AthleteHome from "./components/dashboards/AthleteHome";
 import TrainerHome from "./components/dashboards/TrainerHome";
 import CoachHome from "./components/dashboards/CoachHome";
 import CreateTreatmentPlan from "./components/utils/CreateTreatmentPlan";
+import BroseTreatmentPlans from "./components/utils/BrowseTreatmentPlans";
+import EditTreatmentPlan from "./components/utils/EditTreatmentPlan";
 
 const ProtectedRoute = ({ element }) => {
   const { user } = useUser();
@@ -62,6 +64,8 @@ function App() {
         />
 
         <Route path="/create-treatment-plan" element={<CreateTreatmentPlan />} />
+        <Route path="/browse-treatment-plans" element={<BroseTreatmentPlans />} />
+        <Route path="/edit-treatment-plan/:treatment_plan_id" element={<EditTreatmentPlan />} />
 
         <Route
           path="/coach/dashboard"
