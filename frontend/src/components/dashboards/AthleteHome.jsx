@@ -30,7 +30,7 @@ const AthleteHome = () => {
           console.log("No User found")
           navigate("/create-account");
         } else if (data.role !== "Athlete") {
-          navigate(`/${data.role}Home`);
+          navigate(`/${data.role}/dashboard`);
         } else {
           setUserData(data);
         }
