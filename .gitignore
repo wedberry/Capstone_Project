@@ -1,0 +1,58 @@
+# General OS files
+.DS_Store
+Thumbs.db
+
+# Virtual environments
+venv/
+.env/
+*.venv
+
+# Python-related files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Django-specific
+*.log
+*.sqlite3
+/media/
+/static/
+.env
+
+# Node.js / React
+node_modules/
+/.next/
+/.nuxt/
+/.expo/
+dist/
+build/
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw*
+
+# Logs and databases
+logs/
+*.log
+*.sqlite
+
+# Git-specific
+.git/
+*.lock
+
+# Ignore test coverage reports
+coverage/
+*.coverage
+
+# Ignore compiled code
+*.out
+*.o
+*.so
+*.a
+*.class
