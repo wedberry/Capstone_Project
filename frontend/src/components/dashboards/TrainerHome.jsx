@@ -184,7 +184,7 @@ const TrainerHome = () => {
                         </div>
                         <div className="appointment-details">
                           <p className="appointment-time">{appt.time}</p>
-                          <p className="appointment-trainer">with {appt.trainer_name}</p>
+                          <p className="appointment-trainer">with {appt.athlete_name}</p>
                         </div>
                       </div>
                       <Button 
