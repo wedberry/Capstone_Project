@@ -12,7 +12,7 @@ function SetAvailability() {
   const { user } = useUser();
   const navigate = useNavigate();
 
-  const [trainerName, setTrainerName] = useState("");
+  const [trainerName, setTrainerName] = useState(`${user.firstName} ${user.lastName}`);
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
