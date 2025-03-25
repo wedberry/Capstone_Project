@@ -4,6 +4,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
+import { ChevronLeft, Calendar, Home } from "lucide-react";
+import tractionLogo from "../../assets/tractionLogoWhite2.png";
+import "./ScheduleAppointment.css";
 
 function ScheduleAppointment() {
   const { user } = useUser();
@@ -18,7 +21,6 @@ function ScheduleAppointment() {
     async function fetchTrainers() {
       try {
         const resp = await axios.get("http://localhost:8000/api/trainers/list");
-        
         console.log(resp.data)
         setTrainers(resp.data);
       } catch (error) {
@@ -34,7 +36,7 @@ function ScheduleAppointment() {
   useEffect(() => {
     if (!selectedTrainer) return;
     async function fetchAvailability() {
-        console.log(selectedTrainer)
+      console.log(selectedTrainer)
       try {
         const resp = await axios.get(
           `http://localhost:8000/api/trainers/availabilities?trainer_id=${selectedTrainer}`
@@ -68,69 +70,81 @@ function ScheduleAppointment() {
   };
 
   if (isLoading) {
-    return <p style={{ textAlign: "center", marginTop: "2rem" }}>Loading trainers...</p>;
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p className="loading-text">Loading trainers...</p>
+      </div>
+    );
   }
 
   return (
-    <div style={{ maxWidth: "700px", margin: "2rem auto", padding: "1rem" }}>
-      <Card>
-        <CardHeader>
-          <CardTitle>Schedule an Appointment</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div style={{ marginBottom: "1rem" }}>
-            <label>
-              Select a Trainer:{" "}
+    <div className="schedule-appointment">
+      {/* Hero Section */}
+      <div className="hero-section">
+        <div className="hero-container">
+          <div className="hero-content">
+            <div className="hero-logo">
+              <img src={tractionLogo} alt="Traction Logo" className="hero-logo-image" />
+            </div>
+            <div className="hero-text">
+              <h1>Schedule an Appointment</h1>
+              <p>Book a session with your preferred trainer</p>
+            </div>
+            <Button
+              variant="ghost"
+              className="home-button"
+              onClick={() => navigate("/athlete/dashboard")}
+            >
+              <Home size={20} />
+              Home
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="schedule-container">
+        <Card>
+          <CardHeader>
+            <CardTitle>Available Time Slots</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div>
               <select
+                className="trainer-select"
                 value={selectedTrainer}
                 onChange={(e) => setSelectedTrainer(e.target.value)}
-                style={{ padding: "0.4rem" }}
               >
                 <option value="">-- Choose Trainer --</option>
                 {trainers.map((trainer) => (
-                    <option key={trainer.clerk_id} value={trainer.clerk_id}>
-                        {trainer.first_name} {trainer.last_name} {/* Concatenate first name and last name */}
-                    </option>
-                    ))}
+                  <option key={trainer.clerk_id} value={trainer.clerk_id}>
+                    {trainer.first_name} {trainer.last_name}
+                  </option>
+                ))}
               </select>
-            </label>
-          </div>
-
-          {selectedTrainer && slots.length === 0 && (
-            <p>No available slots for that trainer at this time.</p>
-          )}
-          {slots.length > 0 && (
-            <div style={{ display: "grid", gap: "1rem" }}>
-              {slots.map((slot) => (
-                <div
-                  key={slot.id}
-                  style={{
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "0.5rem",
-                    padding: "1rem",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center"
-                  }}
-                >
-                  <div>
-                    <p><strong>Date:</strong> {slot.date}</p>
-                    <p><strong>Time:</strong> {slot.start_time} - {slot.end_time}</p>
-                    <p><strong>Trainer:</strong> {slot.trainer_name}</p> {/* changed here */}
-                  </div>
-                  <Button onClick={() => handleBook(slot.id)}>Book</Button>
-                </div>
-              ))}
             </div>
-          )}
 
-          <div style={{ marginTop: "2rem" }}>
-            <Button variant="outline" onClick={() => navigate("/athlete/dashboard")}>
-              Back to Dashboard
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+            {selectedTrainer && slots.length === 0 && (
+              <p>No available slots for that trainer at this time.</p>
+            )}
+            
+            {slots.length > 0 && (
+              <div className="slots-grid">
+                {slots.map((slot) => (
+                  <div key={slot.id} className="slot-item">
+                    <div className="slot-info">
+                      <span className="slot-date">{slot.date}</span>
+                      <span className="slot-time">{slot.start_time} - {slot.end_time}</span>
+                      <span className="slot-trainer">with {slot.trainer_name}</span>
+                    </div>
+                    <Button onClick={() => handleBook(slot.id)}>Book</Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

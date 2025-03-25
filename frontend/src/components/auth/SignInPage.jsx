@@ -3,6 +3,7 @@ import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { SignIn } from "@clerk/clerk-react";
 import "./SignIn.css";
+import tractionLogo from "../../assets/tractionLogoWhite2.png";
 
 const SignInPage = () => {
   const { isSignedIn } = useUser(); // Clerk's authentication hook
@@ -25,6 +26,7 @@ const SignInPage = () => {
       </div>
       <div className="right-column">
         <div className="bubble"></div>
+        <img src={tractionLogo} alt="Traction Logo" className="traction-logo" />
       </div>
     </div>
   );

@@ -3,20 +3,64 @@ import { useUser } from "@clerk/clerk-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SignIn.css";
+import tractionLogo from "../../assets/tractionLogoWhite2.png";
 
 const AccountCreationPage = () => {
   const { user, isLoaded } = useUser();
-  const [ firstName, setFirstName ] = useState(user.firstName)
-  const [ lastName, setLastName ] = useState(user.lastName)
-  const [ email, setEmail ] = useState(user.primaryEmailAddress.emailAddress)
-  const [ phone, setPhone ] = useState(user.phoneNumbers && user.phoneNumbers.length > 0 ? user.phoneNumbers[0].phoneNumber : "",)
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [role, setRole] = useState("");
   const [sport, setSport] = useState("");
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
 
+  // Update user information once loaded
+  useEffect(() => {
+    if (isLoaded && user) {
+      setFirstName(user.firstName || "");
+      setLastName(user.lastName || "");
+      setEmail(user.primaryEmailAddress?.emailAddress || "");
+      setPhone(user.phoneNumbers?.[0]?.phoneNumber || "");
+    }
+  }, [isLoaded, user]);
+
+  useEffect(() => {
+    if (isLoaded && !user) {
+      navigate('/sign-in');
+    }
+  }, [isLoaded, user, navigate]);
+
+  if (!isLoaded) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <div className="loading-text">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  const getDashboardPath = (role) => {
+    switch (role) {
+      case "Athlete":
+        return "/athlete/dashboard";
+      case "Trainer":
+        return "/trainer/dashboard";
+      case "Coach":
+        return "/coach/dashboard";
+      default:
+        return "/";
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    navigate(getDashboardPath(role));
     console.log({clerk_id: user.id,
         email: email,
         phone: phone,
@@ -42,32 +86,14 @@ const AccountCreationPage = () => {
       }),
     });
 
+    
+
     if (response.ok) {
       navigate("/athlete/dashboard");  // Redirect to dashboard after account creation
     } else {
       alert("Error creating account");
     }
   };
-
-  useEffect(() => {
-    if (isLoaded && !user) {
-      navigate('/sign-in');
-    }
-  }, [isLoaded, user, navigate]);
-
-  if (!isLoaded) {
-    return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <div className="loading-text">Loading...</div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    navigate('/sign-in');
-  }
-
 
     return (
         <div className="sign-in-container">
@@ -166,6 +192,7 @@ const AccountCreationPage = () => {
           </div>
           <div className="right-column">
             <div className="bubble"></div>
+            <img src={tractionLogo} alt="Traction Logo" className="traction-logo" />
           </div>
         </div>
       );

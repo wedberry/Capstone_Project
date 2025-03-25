@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import axios from "axios";
-
-// Example UI components (adjust to your style)
+import { useNavigate } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
+import { Home } from "lucide-react";
+import tractionLogo from "../../assets/tractionLogoWhite2.png";
+import "./SetAvailability.css";
 
 function SetAvailability() {
   const { user } = useUser();
+  const navigate = useNavigate();
 
   const [trainerName, setTrainerName] = useState("");
   const [date, setDate] = useState("");
@@ -45,18 +48,38 @@ function SetAvailability() {
   };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "2rem auto" }}>
-      <Card>
-        <CardHeader>
-          <CardTitle>Set Availability</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            {/* Trainer Name */}
-            <div>
-              <label htmlFor="trainer-name" style={{ marginRight: "0.5rem" }}>
-                Your Name:
-              </label>
+    <div className="set-availability">
+      {/* Hero Section */}
+      <div className="hero-section">
+        <div className="hero-container">
+          <div className="hero-content">
+            <div className="hero-logo">
+              <img src={tractionLogo} alt="Traction Logo" className="hero-logo-image" />
+            </div>
+            <div className="hero-text">
+              <h1>Set Your Availability</h1>
+              <p>Choose when you're available for appointments</p>
+            </div>
+            <Button
+              variant="ghost"
+              className="home-button"
+              onClick={() => navigate("/trainer/dashboard")}
+            >
+              <Home size={20} />
+              Home
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="availability-container">
+        <Card>
+          <CardHeader>
+            <CardTitle>Set Availability</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="form-group">
+              <label htmlFor="trainer-name">Your Name:</label>
               <input
                 id="trainer-name"
                 type="text"
@@ -65,11 +88,8 @@ function SetAvailability() {
               />
             </div>
 
-            {/* Date */}
-            <div>
-              <label htmlFor="avail-date" style={{ marginRight: "0.5rem" }}>
-                Date:
-              </label>
+            <div className="form-group">
+              <label htmlFor="avail-date">Date:</label>
               <input
                 id="avail-date"
                 type="date"
@@ -78,11 +98,8 @@ function SetAvailability() {
               />
             </div>
 
-            {/* Start Time */}
-            <div>
-              <label htmlFor="start-time" style={{ marginRight: "0.5rem" }}>
-                Start Time:
-              </label>
+            <div className="form-group">
+              <label htmlFor="start-time">Start Time:</label>
               <input
                 id="start-time"
                 type="time"
@@ -91,11 +108,8 @@ function SetAvailability() {
               />
             </div>
 
-            {/* End Time */}
-            <div>
-              <label htmlFor="end-time" style={{ marginRight: "0.5rem" }}>
-                End Time:
-              </label>
+            <div className="form-group">
+              <label htmlFor="end-time">End Time:</label>
               <input
                 id="end-time"
                 type="time"
@@ -104,12 +118,10 @@ function SetAvailability() {
               />
             </div>
 
-            <Button onClick={handleSubmit} style={{ marginTop: "1rem" }}>
-              Save
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+            <Button onClick={handleSubmit}>Save</Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

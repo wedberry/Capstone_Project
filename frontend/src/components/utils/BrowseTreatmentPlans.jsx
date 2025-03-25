@@ -6,6 +6,7 @@ import { ClipboardList, ChevronRight, Activity } from "lucide-react";
 import { ChevronDown, Trash2, Pencil, Home } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import tractionLogo from "../../assets/tractionLogoWhite2.png";
 import "./BrowseTreatmentPlan.css";
 
 const BrowseTreatmentPlans = () => {
@@ -18,48 +19,62 @@ const BrowseTreatmentPlans = () => {
         console.log(id);
         navigate(`/edit-treatment-plan/${id}`);
     }
+
     useEffect(() => {
         if (!user) return;
 
-    const fetchTreatmentPlans = async () => {
-        try {
-            const response = await fetch(`http://localhost:8000/api/trainers/get-treatment-plans`);
-            const data = await response.json();
-            setTreatmentPlans(data.treatmentPlans);
-            setIsLoading(false);
-        } catch (error) {
-            console.error("Error fetching treatment plans:", error);
-            setIsLoading(false);
-        }
+        const fetchTreatmentPlans = async () => {
+            try {
+                const response = await fetch(`http://localhost:8000/api/trainers/get-treatment-plans`);
+                const data = await response.json();
+                setTreatmentPlans(data.treatmentPlans);
+                setIsLoading(false);
+            } catch (error) {
+                console.error("Error fetching treatment plans:", error);
+                setIsLoading(false);
+            }
         };
 
-fetchTreatmentPlans();
-}, [user, navigate]);
+        fetchTreatmentPlans();
+    }, [user, navigate]);
 
-if (isLoading) {
+    if (isLoading) {
+        return (
+            <div className="loading-container">
+                <div className="loading-spinner"></div>
+                <p className="loading-text">Loading your dashboard...</p>
+            </div>
+        );
+    }
+
     return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p className="loading-text">Loading your dashboard...</p>
-      </div>
-    );
-  }
+        <div className="browse-treatment-plans">
+            {/* Hero Section */}
+            <div className="hero-section">
+                <div className="hero-container">
+                    <div className="hero-content">
+                        <div className="hero-logo">
+                            <img src={tractionLogo} alt="Traction Logo" className="hero-logo-image" />
+                        </div>
+                        <div className="hero-text">
+                            <h1>Browse Treatment Plans</h1>
+                            <p>View and manage your treatment plans</p>
+                        </div>
+                        <Button
+                            variant="ghost"
+                            className="home-button"
+                            onClick={() => navigate("/trainer/dashboard")}
+                        >
+                            <Home size={20} />
+                            Home
+                        </Button>
+                    </div>
+                </div>
+            </div>
 
-
-  return (
-    <div className="treatment-plan-table">
-        <Button  
-            variant="ghost"
-            size="sm" 
-            onClick={() => navigate('/trainer/dashboard')}
-        >
-            <Home size={16} />
-        </Button>
-        <h2>Browse Treatment Plans</h2>
-
-
-        <div className="treatment-section">
-                <Card className="treatment-card">
+            <div className="treatment-plan-table">
+                <div className="treatment-section">
+                    <Card className="treatment-card">
                         <CardHeader>
                             <CardTitle>Treatment Plans</CardTitle>
                         </CardHeader>
@@ -81,7 +96,7 @@ if (isLoading) {
                                                 <TableCell>{plan.injury}</TableCell>
                                                 <TableCell>{plan.trainer_name}</TableCell>
                                                 <TableCell>
-                                                    <div className = "action-buttons">
+                                                    <div className="action-buttons">
                                                         <Button  
                                                             variant="ghost"
                                                             size="sm" 
@@ -118,18 +133,17 @@ if (isLoading) {
                                 </TableBody>
                             </Table>
                             
-                        <div className="submit-container">
-                            <Button onClick={() => navigate("/create-treatment-plan")} className="submit-button">
-                                Create New Treatment Plan
-                            </Button>
-                        </div>
+                            <div className="submit-container">
+                                <Button onClick={() => navigate("/create-treatment-plan")} className="submit-button">
+                                    Create New Treatment Plan
+                                </Button>
+                            </div>
                         </CardContent>
                     </Card>
-    
                 </div>
-
-    </div>
-  );
+            </div>
+        </div>
+    );
 };
 
 export default BrowseTreatmentPlans;
