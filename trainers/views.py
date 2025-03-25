@@ -85,16 +85,23 @@ def get_appointments(request, athlete_id):
     data = []
     for a in appts:
 
-        clerk_id = a.trainer_id
-        trainer = CustomUser.objects.get(clerk_id=clerk_id)
+        trainer_clerk_id = a.trainer_id
+        trainer = CustomUser.objects.get(clerk_id=trainer_clerk_id)
 
         trainer_name = f"{trainer.first_name} {trainer.last_name}"
+
+        athlete_clerk_id = a.athlete_id
+        athlete = CustomUser.objects.get(clerk_id=athlete_clerk_id)
+
+        athlete_name = f"{athlete.first_name} {athlete.last_name}"
+
         data.append({
             "id": a.id,
             "date": str(a.date),
             "time": str(a.time),
             "trainer_id": a.trainer_id,
-            "trainer_name": trainer_name
+            "trainer_name": trainer_name,
+            "athlete_name": athlete_name
         })
 
     print(data)
