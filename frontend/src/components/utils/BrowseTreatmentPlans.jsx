@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Table, TableBody, TableCell, TableHead, TableRow } from "../ui/table";
 import { ClipboardList, ChevronRight, Activity } from "lucide-react";
-import { ChevronDown, Trash2, Pencil } from "lucide-react";
+import { ChevronDown, Trash2, Pencil, Home } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import "./BrowseTreatmentPlan.css";
@@ -48,7 +48,15 @@ if (isLoading) {
 
   return (
     <div className="treatment-plan-table">
+        <Button  
+            variant="ghost"
+            size="sm" 
+            onClick={() => navigate('/trainer/dashboard')}
+        >
+            <Home size={16} />
+        </Button>
         <h2>Browse Treatment Plans</h2>
+
 
         <div className="treatment-section">
                 <Card className="treatment-card">
