@@ -22,14 +22,17 @@ def get_user(request, clerk_id):
 
     try:
         user = CustomUser.objects.get(clerk_id=clerk_id)
-        exists = user.clerk_id
+        exists = True if user else False
 
+        id = user.clerk_id
         first_name = user.first_name
         last_name = user.last_name
 
         role = user.role
 
-        return JsonResponse({'exists': exists, 'first_name': first_name, 'last_name': last_name, 'role': role})
+        sport = user.sport
+
+        return JsonResponse({'exists': exists, 'id': id, 'first_name': first_name, 'last_name': last_name, 'role': role, 'sport': sport})
     
     except Exception as e:
         return JsonResponse({"error": f"{e}"}, status=400)
@@ -48,6 +51,7 @@ def create_user(request):
                 first_name=data["first_name"],
                 last_name=data["last_name"],
                 role=data["role"],
+                sport=data["sport"],
             )
             return JsonResponse({"success": True})
         return JsonResponse({"error": "User already exists"}, status=400)

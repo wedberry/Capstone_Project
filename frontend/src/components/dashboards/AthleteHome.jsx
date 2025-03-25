@@ -27,10 +27,10 @@ const AthleteHome = () => {
 
         const data = await response.json();
         if (!data.exists) {
-          console.log("No User found")
+          console.log("No User found");
           navigate("/create-account");
-        } else if (data.role !== "Athlete") {
-          navigate(`/${data.role}/dashboard`);
+        // } else if (data.role !== "Athlete") {
+        //   navigate(`/${data.role}Dashboard`);
         } else {
           setUserData(data);
         }
@@ -63,6 +63,8 @@ const AthleteHome = () => {
 
     fetchUserData();
     fetchAppointments();
+    console.log(appointments);
+    
     fetchNotifications();
   }, [user, navigate]);
 
@@ -75,7 +77,14 @@ const AthleteHome = () => {
     );
   }
 
-  if (!userData) return null;
+  if (!userData) {
+    return (
+      <div className="no-data">
+        <h2>Unable to load athlete data</h2>
+        <p>Please check your network or try again later.</p>
+      </div>
+    );
+  }
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -107,7 +116,8 @@ const AthleteHome = () => {
         {/* Quick Actions */}
         <h2 className="section-title">Quick Actions</h2>
         <div className="quick-actions">
-          <Card className="action-card blue-card" onClick={() => navigate("/schedule-appointment")}>
+          {/* Schedule Appointment Card (uses a button inside) */}
+          <Card className="action-card blue-card">
             <CardHeader className="action-card-header">
               <div className="action-card-title-row">
                 <div className="action-card-title-content">
@@ -121,9 +131,20 @@ const AthleteHome = () => {
             </CardHeader>
             <CardContent>
               <p className="action-description">Book a session with your trainer</p>
+              {/* The actual button to navigate */}
+              <Button
+  className="schedule-now-button"
+  onClick={() => {
+    navigate("/athlete/schedule-appointment");
+  }}
+>
+  Schedule Now
+</Button>
+
             </CardContent>
           </Card>
 
+          {/* Treatment Plan Card */}
           <Card className="action-card green-card" onClick={() => navigate("/treatment-plan")}>
             <CardHeader className="action-card-header">
               <div className="action-card-title-row">
@@ -141,6 +162,7 @@ const AthleteHome = () => {
             </CardContent>
           </Card>
 
+          {/* Notifications Card */}
           <Card className="action-card red-card" onClick={() => navigate("/notifications")}>
             <CardHeader className="action-card-header">
               <div className="action-card-title-row">
@@ -177,7 +199,7 @@ const AthleteHome = () => {
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  onClick={() => navigate("/schedule-appointment")}
+                  onClick={() => navigate("/athlete/schedule-appointment")}
                   className="view-all-button blue-button"
                 >
                   View All
@@ -216,7 +238,7 @@ const AthleteHome = () => {
                   <Button 
                     className="empty-state-button" 
                     variant="outline"
-                    onClick={() => navigate("/schedule-appointment")}
+                    onClick={() => navigate("/athlete/schedule-appointment")}
                   >
                     Schedule Now
                   </Button>
