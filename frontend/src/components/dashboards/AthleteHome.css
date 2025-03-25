@@ -110,7 +110,6 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     overflow: hidden;
-    z-index: 10;
   }
   
   .action-card:hover {
@@ -482,3 +481,29 @@
       align-self: flex-end;
     }
   }
+
+  .schedule-now-button {
+    background-color: #edf2ff; /* A light blue-ish background */
+    color: #1e3a8a; /* Deep navy text to contrast */
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    /* If your button component doesn't handle focus states, add them: */
+    outline: none;
+  }
+  
+  .schedule-now-button:hover {
+    background-color: #dbeafe; /* Slightly darker on hover */
+  }
+  
+  .schedule-now-button:active {
+    background-color: #bfdbfe; /* Even darker when pressed */
+  }
+  
+  .schedule-now-button:focus-visible {
+    box-shadow: 0 0 0 2px rgba(59,130,246,0.5); /* Outline for accessibility */
+  }
+  

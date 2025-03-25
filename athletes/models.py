@@ -1,3 +1,10 @@
 from django.db import models
 
-# Create your models here.
+class Appointment(models.Model):
+    # define your fields here
+    athlete_id = models.CharField(max_length=50)
+    date = models.DateField()
+    time = models.TimeField()
+    notes = models.TextField(blank=True, null=True)
+
+    

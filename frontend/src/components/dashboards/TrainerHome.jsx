@@ -15,7 +15,10 @@ const TrainerHome = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) return;
+    if (!user){
+      console.log("User Not detected");
+        return;
+    }
 
     const fetchUserData = async () => {
       try {
@@ -26,11 +29,13 @@ const TrainerHome = () => {
         });
 
         const data = await response.json();
-        if (!data.exists) {
+        console.log(data)
+        if (!data || !data.id) {
           console.log("No User found")
           navigate("/create-account");
-        } else if (data.role !== "trainer") {
-          navigate(`/${data.role}/dashboard`);
+        // } else if (data.role !== "Trainer") {
+
+        //   navigate(`/${data.role}/dashboard`);
         } else {
           setUserData(data);
         }
@@ -75,7 +80,10 @@ const TrainerHome = () => {
     );
   }
 
-  if (!userData) return null;
+  if (!userData){
+    console.log("No user data");
+    return null;
+  } 
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -122,6 +130,23 @@ const TrainerHome = () => {
             </CardHeader>
             <CardContent>
               <p className="action-description">Browse and Mangage rehab programs</p>
+            </CardContent>
+          </Button>
+
+          <Button className="action-card green-card" onClick={() => navigate("/trainer/set-availability")}>
+            <CardHeader className="action-card-header">
+              <div className="action-card-title-row">
+                <div className="action-card-title-content">
+                  <div className="action-icon-container red-icon">
+                    <ClipboardList />
+                  </div>
+                  <CardTitle>Set Your Schedule</CardTitle>
+                </div>
+                <ChevronRight className="action-chevron" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="action-description">Set your schedule for upcoming dates</p>
             </CardContent>
           </Button>
 

@@ -2,16 +2,25 @@ import React, { useEffect } from "react";  // Import React and useEffect
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import { SignedIn, SignedOut, RedirectToSignIn, useUser } from "@clerk/clerk-react";
 
+// Public/Auth Pages
 import SignInPage from "./components/auth/SignInPage";
 import SignUpPage from "./components/auth/SignUpPage";
 import ClerkPage from "./components/auth/ClerkView"
 import CreateAccountPage from "./components/auth/CreateAccountPage";
+
+// Athlete Pages
 import AthleteHome from "./components/dashboards/AthleteHome";
+import ScheduleAppointment from "./components/utils/ScheduleAppointment";
+
+// Trainer Pages
 import TrainerHome from "./components/dashboards/TrainerHome";
-import CoachHome from "./components/dashboards/CoachHome";
 import CreateTreatmentPlan from "./components/utils/CreateTreatmentPlan";
 import BroseTreatmentPlans from "./components/utils/BrowseTreatmentPlans";
 import EditTreatmentPlan from "./components/utils/EditTreatmentPlan";
+import SetAvailability from "./components/utils/SetAvailability";
+
+// Coach Pages
+import CoachHome from "./components/dashboards/CoachHome";
 
 const ProtectedRoute = ({ element }) => {
   const { user } = useUser();
@@ -46,6 +55,7 @@ function App() {
         <Route path="/create-account" element={<CreateAccountPage />} />
 
         {/* 🔐 Protected Routes (Require Authentication) */}
+        {/* 🔐 Athlete Routes */}
         <Route
           path="/athlete/dashboard"
           element={
@@ -54,6 +64,17 @@ function App() {
             </SignedIn>
           }
         />
+
+        <Route
+          path="/athlete/schedule-appointment"
+          element={
+            <SignedIn>
+              <ScheduleAppointment />
+            </SignedIn>
+          }
+        />
+
+        {/* 🔐 Trainer Routes */}
         <Route
           path="/trainer/dashboard"
           element={
@@ -63,10 +84,43 @@ function App() {
           }
         />
 
-        <Route path="/create-treatment-plan" element={<CreateTreatmentPlan />} />
-        <Route path="/browse-treatment-plans" element={<BroseTreatmentPlans />} />
-        <Route path="/edit-treatment-plan/:treatment_plan_id" element={<EditTreatmentPlan />} />
+        <Route 
+          path="/create-treatment-plan" 
+          element={
+            <SignedIn>
+              <CreateTreatmentPlan />
+            </SignedIn>
+            } 
+          />
 
+        <Route 
+          path="/browse-treatment-plans" 
+          element={
+            <SignedIn>
+              <BroseTreatmentPlans />
+            </SignedIn>
+            } 
+          />
+
+        <Route 
+          path="/edit-treatment-plan/:treatment_plan_id" 
+            element={
+              <SignedIn>
+                <EditTreatmentPlan />
+              </SignedIn>
+                } 
+              />
+
+        <Route
+          path="/trainer/set-availability"
+          element={
+            <SignedIn>
+              <SetAvailability />
+            </SignedIn>
+          }
+        />
+
+        {/* 🔐 Coach Routes */}   
         <Route
           path="/coach/dashboard"
           element={
