@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Bell, Calendar, ClipboardList, ChevronRight, Activity } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import tractionLogo from "../../assets/tractionLogoWhite2.png";
 import "./AthleteHome.css";
 
 const AthleteHome = () => {
@@ -101,8 +102,8 @@ const AthleteHome = () => {
       <div className="hero-section">
         <div className="hero-container">
           <div className="hero-content">
-            <div className="hero-icon">
-              <Activity />
+            <div className="hero-logo">
+              <img src={tractionLogo} alt="Traction Logo" className="hero-logo-image" />
             </div>
             <div className="hero-text">
               <h1>Welcome back, {userData.first_name}!</h1>
