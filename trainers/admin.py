@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import TrainerAvailability
+from .models import Appointment
 
-# Register your models here.
+admin.site.register(TrainerAvailability)
+admin.site.register(Appointment)
