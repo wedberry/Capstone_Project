@@ -14,7 +14,7 @@ function SetAvailability() {
   const navigate = useNavigate();
 
   // Trainer info
-  const [trainerName, setTrainerName] = useState("");
+
 
   // Days-of-week checkboxes
   const [daysOfWeek, setDaysOfWeek] = useState({
@@ -28,6 +28,8 @@ function SetAvailability() {
   });
 
   // Time range
+  const [trainerName, setTrainerName] = useState(`${user.firstName} ${user.lastName}`);
+  const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
 

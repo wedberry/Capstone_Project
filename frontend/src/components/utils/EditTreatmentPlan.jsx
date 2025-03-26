@@ -20,6 +20,8 @@ export default function EditTreatmentPlan() {
     const [injury, setInjury] = useState("");
     const [date, setDate] = useState(null);
 
+    const JSON5 = require("json5");
+
     const [treatmentPlan, setTreatmentPlan] = useState({ 
         exercises: [], 
         treatments: [] 
@@ -37,15 +39,10 @@ export default function EditTreatmentPlan() {
     const [isLoading, setIsLoading] = useState(false);
 
     const safeJsonParse = (jsonString) => {
+        
         try {
             // Replace single quotes with double quotes for strings
-            let cleanedString = jsonString.replace(/'([^']+)'/g, '"$1"');
-    
-            // Fix unquoted keys (e.g., { name: 'Squats' }) — this matches keys and adds quotes around them
-            cleanedString = cleanedString.replace(/([a-zA-Z0-9_]+)(?=\s*:)/g, '"$1"');
-    
-            // Parse the cleaned-up string
-            const parsedObject = JSON.parse(cleanedString);
+            const parsedObject = JSON5.parse(jsonString);
             return parsedObject;
         } catch (error) {
             console.error("Error parsing JSON:", error);
