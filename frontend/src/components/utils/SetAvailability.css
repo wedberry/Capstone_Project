@@ -206,3 +206,28 @@
     font-weight: 500;
   }
   
+  /* Lays out time-slot buttons in a grid (e.g., 3 columns) */
+.time-slot-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* or 4 columns, your choice */
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  /* A minimal, pill-like button for each time slot */
+  .time-slot-button {
+    background: #f2f8ff;           /* Light bluish background */
+    border: none;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    color: #333;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  
+  .time-slot-button:hover {
+    background-color: #e0f0ff;     /* Slightly darker on hover */
+  }
+  
