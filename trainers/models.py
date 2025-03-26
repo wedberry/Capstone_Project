@@ -15,25 +15,26 @@ class TreatmentPlan(models.Model):
 
 
 class TrainerAvailability(models.Model):
-    trainer_id = models.CharField(max_length=50)   # e.g. Clerk user ID
-    trainer_name = models.CharField(max_length=100, blank=True, null=True)
+    trainer_id = models.CharField(max_length=100)
+    trainer_name = models.CharField(max_length=100, blank=True)
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
     is_booked = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.trainer_name} ({self.trainer_id}) - {self.date} {self.start_time}-{self.end_time}"
+        return f"{self.trainer_name} - {self.date} {self.start_time}-{self.end_time}"
     
 # Example: trainers/models.py
 
 class Appointment(models.Model):
-    athlete_id = models.CharField(max_length=50)  
-    trainer_id = models.CharField(max_length=50)
+    athlete_id = models.CharField(max_length=100)
+    trainer_id = models.CharField(max_length=100)
     date = models.DateField()
     time = models.TimeField()
-    notes = models.TextField(blank=True, null=True)
-    
+    appointment_type = models.CharField(max_length=50)  # e.g. "Consultation", "Treatment", "Clearance"
+    max_length=50, 
+    default="treatment"
 
     def __str__(self):
-        return f"{self.athlete_id} with {self.trainer_id} on {self.date} at {self.time}"
+        return f"Athlete={self.athlete_id}, Trainer={self.trainer_id}, {self.date} {self.time}, type={self.appointment_type}"
