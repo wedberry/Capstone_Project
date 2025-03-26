@@ -172,3 +172,94 @@
   }
 }
 
+/* Container that holds the entire two-column layout:
+   left = calendar, right = time slots */
+   .appointment-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+  
+  /* Left column with trainer selection and calendar */
+  .left-column {
+    flex: 0 0 300px;
+    max-width: 350px;
+  }
+  
+  /* Right column for time slots */
+  .right-column {
+    flex: 1;
+  }
+  
+  /* The mini-calendar’s outer wrapper */
+  .mini-calendar-wrapper {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    border-radius: 8px;
+  }
+  
+  /* The top bar with previous/next month arrows and month label */
+  .calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+  
+  .arrow-btn {
+    background: #fff;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+  
+  .arrow-btn:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .month-label {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  
+  /* The grid of day cells */
+  .calendar-days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 36px);
+    grid-gap: 6px;
+    justify-content: center;
+  }
+  
+  /* Each day cell */
+  .day-cell {
+    width: 36px;
+    height: 36px;
+    background-color: #f8f8f8;
+    border-radius: 4px;
+    border: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s, color 0.2s;
+    font-size: 0.85rem;
+    color: #333;
+  }
+  
+  .day-cell:hover {
+    background-color: #e8e8e8;
+  }
+  
+  /* Highlight the selected date */
+  .selected-day {
+    background-color: #007bff;
+    color: #fff;
+    font-weight: bold;
+  }
+  

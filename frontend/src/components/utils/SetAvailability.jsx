@@ -1,54 +1,101 @@
 import React, { useState } from "react";
 import { useUser } from "@clerk/clerk-react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { Home } from "lucide-react";
+
 import tractionLogo from "../../assets/tractionLogoWhite2.png";
-import "./SetAvailability.css";
+import "./SetAvailability.css"; // Make sure this file matches your styling
 
 function SetAvailability() {
   const { user } = useUser();
   const navigate = useNavigate();
 
+  // Trainer info
   const [trainerName, setTrainerName] = useState("");
-  const [date, setDate] = useState("");
+
+  // Days-of-week checkboxes
+  const [daysOfWeek, setDaysOfWeek] = useState({
+    monday: false,
+    tuesday: false,
+    wednesday: false,
+    thursday: false,
+    friday: false,
+    saturday: false,
+    sunday: false,
+  });
+
+  // Time range
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
 
+  // How many weeks ahead
+  const [numWeeks, setNumWeeks] = useState(2);
+
+  const handleCheckbox = (day) => {
+    setDaysOfWeek((prev) => ({
+      ...prev,
+      [day]: !prev[day],
+    }));
+  };
+
   const handleSubmit = async () => {
     if (!user) {
-      alert("You must be logged in as a trainer to set availability.");
+      alert("You must be logged in as a trainer.");
       return;
     }
-    if (!trainerName || !date || !startTime || !endTime) {
-      alert("Please fill out all fields, including your name.");
+    if (!trainerName) {
+      alert("Please enter your name.");
+      return;
+    }
+
+    // Gather selected days
+    const selectedDays = Object.keys(daysOfWeek).filter((day) => daysOfWeek[day]);
+    if (selectedDays.length === 0) {
+      alert("Select at least one weekday.");
+      return;
+    }
+    if (!startTime || !endTime) {
+      alert("Please specify a start and end time.");
       return;
     }
 
     try {
-      await axios.post("http://localhost:8000/api/trainers/set-availability/", {
-        trainer_id: user.id,        // Clerk user ID
-        trainer_name: trainerName,  // The name trainer typed
-        date,
+      // In your backend, create an endpoint "bulk-set-availability"
+      const resp = await axios.post("http://localhost:8000/api/trainers/bulk-set-availability/", {
+        trainer_id: user.id,
+        trainer_name: trainerName,
+        selected_days: selectedDays,
         start_time: startTime,
-        end_time: endTime
+        end_time: endTime,
+        num_weeks: numWeeks,
       });
-      alert("Availability Set!");
-      // Optional: Clear the form
+      alert(resp.data.message || "Availability set successfully!");
+      
+      // Reset form
       setTrainerName("");
-      setDate("");
+      setDaysOfWeek({
+        monday: false,
+        tuesday: false,
+        wednesday: false,
+        thursday: false,
+        friday: false,
+        saturday: false,
+        sunday: false,
+      });
       setStartTime("");
       setEndTime("");
+      setNumWeeks(2);
     } catch (error) {
-      console.error(error);
-      alert("Failed to set availability.");
+      console.error("Failed to set availability:", error);
+      alert("Error setting availability.");
     }
   };
 
   return (
-    <div className="set-availability">
+    <div className="set-availability-page">
       {/* Hero Section */}
       <div className="hero-section">
         <div className="hero-container">
@@ -72,53 +119,68 @@ function SetAvailability() {
         </div>
       </div>
 
+      {/* Main Container */}
       <div className="availability-container">
         <Card>
           <CardHeader>
-            <CardTitle>Set Availability</CardTitle>
+            <CardTitle>Set Availability (Bulk)</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="form-group">
-              <label htmlFor="trainer-name">Your Name:</label>
+            <div className="trainer-form-group">
+              <label>Your Name:</label>
               <input
-                id="trainer-name"
                 type="text"
                 value={trainerName}
                 onChange={(e) => setTrainerName(e.target.value)}
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="avail-date">Date:</label>
-              <input
-                id="avail-date"
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
+            <div className="days-of-week-box">
+              <p>Select Days of the Week:</p>
+              {Object.keys(daysOfWeek).map((day) => (
+                <label key={day}>
+                  <input
+                    type="checkbox"
+                    checked={daysOfWeek[day]}
+                    onChange={() => handleCheckbox(day)}
+                  />
+                  {day.charAt(0).toUpperCase() + day.slice(1)}
+                </label>
+              ))}
             </div>
 
-            <div className="form-group">
-              <label htmlFor="start-time">Start Time:</label>
+            <div className="trainer-form-group">
+              <label>Start Time:</label>
               <input
-                id="start-time"
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="end-time">End Time:</label>
+            <div className="trainer-form-group">
+              <label>End Time:</label>
               <input
-                id="end-time"
                 type="time"
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
               />
             </div>
 
-            <Button onClick={handleSubmit}>Save</Button>
+            <div className="trainer-form-group">
+              <label># Weeks Ahead:</label>
+              <input
+                type="number"
+                min="1"
+                max="12"
+                value={numWeeks}
+                onChange={(e) => setNumWeeks(e.target.value)}
+              />
+            </div>
+
+            <Button onClick={handleSubmit}>
+              Save Availability
+            </Button>
           </CardContent>
         </Card>
       </div>

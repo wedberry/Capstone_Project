@@ -138,3 +138,71 @@
     transform: rotate(360deg);
   }
 } 
+/* SetAvailability.css */
+
+.set-availability-page {
+    font-family: sans-serif;
+  }
+  
+  .hero-section {
+    background-color: #333;
+    color: #fff;
+    padding: 2rem 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .hero-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .hero-logo-image {
+    max-height: 60px;
+    margin-right: 1rem;
+  }
+  
+  .hero-text h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .home-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #fff;
+  }
+  
+  .availability-container {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  
+  /* Card styling is from your existing shadcn/ui card logic */
+  .trainer-form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+  
+  .days-of-week-box {
+    background: #f9f9f9;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+  }
+  .days-of-week-box p {
+    margin-top: 0;
+    font-weight: 600;
+  }
+  .days-of-week-box label {
+    margin-right: 1rem;
+    font-weight: 500;
+  }
+  

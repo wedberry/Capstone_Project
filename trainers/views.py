@@ -6,6 +6,7 @@ import json
 from .models import TreatmentPlan, TrainerAvailability, Appointment
 from .serializers import TreatmentPlanSerializer
 from users.models import CustomUser
+from datetime import datetime, timedelta
 
 @api_view(['GET', 'POST'])
 def save_treatment_plan(request):
@@ -151,16 +152,19 @@ def get_trainers_list(request):
 @api_view(['GET'])
 def get_availabilities(request):
     trainer_id = request.GET.get('trainer_id')
-    slots = TrainerAvailability.objects.filter(
-        trainer_id=trainer_id, is_booked=False
-    )
+    date_str = request.GET.get('date')
+
+    slots = TrainerAvailability.objects.filter(trainer_id=trainer_id, is_booked=False)
+
+    if date_str:
+        slots = slots.filter(date=date_str)  # exact match on date
 
     data = []
     for slot in slots:
         data.append({
             "id": slot.id,
             "trainer_id": slot.trainer_id,
-            "trainer_name": slot.trainer_name,  # Return the name
+            "trainer_name": slot.trainer_name,
             "date": str(slot.date),
             "start_time": str(slot.start_time),
             "end_time": str(slot.end_time),
@@ -171,8 +175,13 @@ def get_availabilities(request):
 
 @api_view(['POST'])
 def book_availability(request):
+    """
+    Athlete picks a slot and an appointment_type: "injury_consultation" (30 min),
+    "treatment" (30 min), "medical_clearance" (15 min)
+    """
     slot_id = request.data.get('slot_id')
     athlete_id = request.data.get('athlete_id')
+    appointment_type = request.data.get('appointment_type', 'treatment')  # default 30 min
 
     try:
         slot = TrainerAvailability.objects.get(id=slot_id)
@@ -186,13 +195,107 @@ def book_availability(request):
     slot.is_booked = True
     slot.save()
 
-    # Create the Appointment record
+    # Create an Appointment record
     Appointment.objects.create(
         athlete_id=athlete_id,
         trainer_id=slot.trainer_id,
         date=slot.date,
         time=slot.start_time,
-        # notes or other fields if needed
+        appointment_type=appointment_type
     )
 
     return Response({"success": True, "message": "Appointment created"})
+
+@api_view(['POST'])
+def bulk_set_availability(request):
+    """
+    Allows a trainer to set availability for multiple weeks in 15-min increments.
+    Expects JSON like:
+    {
+      "trainer_id": "user_123",
+      "trainer_name": "Coach Alyssa",
+      "selected_days": ["monday","tuesday","wednesday","thursday"],
+      "start_time": "09:00",
+      "end_time": "15:00",
+      "num_weeks": 2
+    }
+    """
+    trainer_id = request.data.get('trainer_id')
+    trainer_name = request.data.get('trainer_name', "")
+    selected_days = request.data.get('selected_days', [])
+    start_time_str = request.data.get('start_time')
+    end_time_str = request.data.get('end_time')
+    num_weeks = int(request.data.get('num_weeks', 2))
+
+    # parse start/end times
+    fmt = "%H:%M"
+    start_dt = datetime.strptime(start_time_str, fmt)
+    end_dt = datetime.strptime(end_time_str, fmt)
+
+    # e.g. 15 min increments or 30. We'll do 15 min to accommodate 15/30 type bookings
+    slot_length = timedelta(minutes=15)
+
+    # day-of-week mapping for convenience
+    dow_map = {
+        'sunday': 6,
+        'monday': 0,
+        'tuesday': 1,
+        'wednesday': 2,
+        'thursday': 3,
+        'friday': 4,
+        'saturday': 5,
+    }
+
+    # Starting from "today"
+    now = datetime.now().date()
+
+    created_count = 0
+
+    for w in range(num_weeks):
+        # For each day in this week
+        for d in range(7):
+            current_date = now + timedelta(days=(w * 7 + d))
+            weekday_index = current_date.weekday()  # Monday=0, Sunday=6 in Python
+
+            # check if user selected that day
+            # we find if the textual day (monday=0) matches
+            # We'll invert dow_map so python Monday=0 -> 'monday'
+            python_to_name = {v: k for k, v in dow_map.items()}
+
+            day_name = python_to_name.get(weekday_index, None)
+            if day_name in selected_days:
+                # generate 15-min increments
+                slot_start = datetime(
+                    year=current_date.year,
+                    month=current_date.month,
+                    day=current_date.day,
+                    hour=start_dt.hour,
+                    minute=start_dt.minute
+                )
+                slot_end = datetime(
+                    year=current_date.year,
+                    month=current_date.month,
+                    day=current_date.day,
+                    hour=end_dt.hour,
+                    minute=end_dt.minute
+                )
+
+                while slot_start < slot_end:
+                    next_slot = slot_start + slot_length
+                    if next_slot <= slot_end:
+                        # create availability record
+                        TrainerAvailability.objects.create(
+                            trainer_id=trainer_id,
+                            trainer_name=trainer_name,
+                            date=current_date,
+                            start_time=slot_start.time(),
+                            end_time=next_slot.time(),
+                            is_booked=False
+                        )
+                        created_count += 1
+                    slot_start = next_slot
+
+    return Response({
+        "success": True,
+        "message": f"Created {created_count} availability slots."
+    })
