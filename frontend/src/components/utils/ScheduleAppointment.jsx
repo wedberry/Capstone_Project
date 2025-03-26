@@ -17,16 +17,15 @@ function ScheduleAppointment() {
   const [selectedTrainer, setSelectedTrainer] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  const [slots, setSlots] = useState([]);         // Raw 15-min slots from backend
-  const [mergedSlots, setMergedSlots] = useState([]); // Possibly combined for 30 min
+  const [slots, setSlots] = useState([]);     
+  const [mergedSlots, setMergedSlots] = useState([]); 
 
   // For mini-calendar
   const [displayedMonth, setDisplayedMonth] = useState(selectedDate.getMonth());
   const [displayedYear, setDisplayedYear] = useState(selectedDate.getFullYear());
 
   // Appointment type: 15 or 30 min
-  const [appointmentType, setAppointmentType] = useState("treatment"); 
-  // "treatment" or "injury_consultation" => 30 min, "medical_clearance" => 15 min
+  const [appointmentType, setAppointmentType] = useState("treatment");
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -72,54 +71,45 @@ function ScheduleAppointment() {
       return;
     }
 
-    // Sort by start_time to ensure consecutive order
     const sorted = [...slots].sort((a, b) => a.start_time.localeCompare(b.start_time));
 
-    // If 15-min type, we just show them raw
     if (appointmentType === "medical_clearance") {
       setMergedSlots(sorted);
       return;
     }
 
-    // Otherwise, it's a 30-min type => Combine consecutive slots
     let combined = [];
     let i = 0;
     while (i < sorted.length) {
       const current = sorted[i];
-      // Look ahead to next slot
       if (i + 1 < sorted.length) {
         const next = sorted[i + 1];
-        // If next.start_time == current.end_time => they form a 30-min block
         if (next.start_time === current.end_time) {
-          // Combine them
           const combinedSlot = {
-            // ID: we can store just current.id, or "combined" ID logic
-            id: current.id, 
+            id: current.id,
             date: current.date,
             trainer_id: current.trainer_id,
             trainer_name: current.trainer_name,
             start_time: current.start_time,
-            end_time: next.end_time, // e.g. extends end_time by 15 min
-            // etc.
+            end_time: next.end_time,
           };
           combined.push(combinedSlot);
-          i += 2; // skip the next slot too
+          i += 2;
           continue;
         }
       }
-      // If no consecutive pair, skip it or ignore it
       i += 1;
     }
     setMergedSlots(combined);
   }, [slots, appointmentType]);
 
-  // 4) Book a slot (or a 30-min block)
+  // 4) Book a slot
   const handleBook = async (slot) => {
     try {
       await axios.post("http://localhost:8000/api/trainers/book-availability/", {
         slot_id: slot.id,
         athlete_id: user.id,
-        appointment_type: appointmentType, // match your state variable here
+        appointment_type: appointmentType,
       });
       alert("Appointment booked!");
       navigate("/athlete/dashboard");
@@ -128,6 +118,52 @@ function ScheduleAppointment() {
       alert("Failed to book slot.");
     }
   };
+
+  // CHANGED: Helper to format "HH:MM:SS" => "H:MM am/pm"
+  function formatSlotTime(timeStr) {
+    const [hour, minute] = timeStr.split(":");
+    let hh = parseInt(hour, 10);
+
+    const ampm = hh >= 12 ? "pm" : "am";
+    hh = hh % 12 || 12;
+
+    return `${hh}:${minute} ${ampm}`;
+  }
+
+  // ADDED: Inline hover approach for button
+  // A small component that tracks hover to lighten color
+  function TimeSlotButton({ slot }) {
+    const [isHover, setIsHover] = useState(false);
+
+    const style = {
+      position: "relative",
+      zIndex: 9999,
+      pointerEvents: "auto",
+      backgroundColor: isHover ? "#91c2ff" : "#2a70ff", // light blue on hover
+      color: "#fff",
+      border: "none",
+      borderRadius: "6px",
+      padding: "0.75rem 1rem",
+      fontSize: "0.9rem",
+      fontWeight: "bold",
+      cursor: "pointer",
+      textAlign: "center",
+      margin: 0,
+      transition: "background-color 0.2s, transform 0.1s",
+      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+    };
+
+    return (
+      <button
+        style={style}
+        onMouseEnter={() => setIsHover(true)}   // CHANGED: handle hover
+        onMouseLeave={() => setIsHover(false)}  // CHANGED: handle hover
+        onClick={() => handleBook(slot)}
+      >
+        {formatSlotTime(slot.start_time)} - {formatSlotTime(slot.end_time)}
+      </button>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -145,7 +181,11 @@ function ScheduleAppointment() {
         <div className="hero-container">
           <div className="hero-content">
             <div className="hero-logo">
-              <img src={tractionLogo} alt="Traction Logo" className="hero-logo-image" />
+              <img
+                src={tractionLogo}
+                alt="Traction Logo"
+                className="hero-logo-image"
+              />
             </div>
             <div className="hero-text">
               <h1>Schedule an Appointment</h1>
@@ -210,34 +250,21 @@ function ScheduleAppointment() {
                 />
               </div>
 
-              {/* Right column: show mergedSlots if 30-min, or raw if 15-min */}
+              {/* Right column: time slot grid */}
               <div className="right-column">
-                {!selectedTrainer && <p>Please choose a trainer.</p>}
+                {!selectedTrainer && (
+                  <p>Please choose a trainer.</p>
+                )}
+
                 {selectedTrainer && mergedSlots.length === 0 && (
                   <p>No available slots for the chosen date.</p>
                 )}
+
                 {selectedTrainer && mergedSlots.length > 0 && (
-                  <div className="slots-grid">
+                  <div className="time-slot-grid">
+                    {/* CHANGED: Use TimeSlotButton for each slot */}
                     {mergedSlots.map((slot, idx) => (
-                      <div key={idx} className="slot-item">
-                        <div className="slot-info">
-                          <span className="slot-date">
-                            <Calendar size={14} /> {slot.date}
-                          </span>
-                          <span className="slot-time">
-                            {slot.start_time} - {slot.end_time}
-                          </span>
-                          <span className="slot-trainer">
-                            with {slot.trainer_name}
-                          </span>
-                        </div>
-                        <Button
-  style={{ position: "relative", zIndex: 9999, pointerEvents: "auto" }}
-  onClick={() => handleBook(slot)}
->
-  Book
-</Button>
-                      </div>
+                      <TimeSlotButton key={idx} slot={slot} />
                     ))}
                   </div>
                 )}
@@ -250,7 +277,9 @@ function ScheduleAppointment() {
   );
 }
 
-/** Minimal Calendar component */
+// CHANGED: Moved the formatSlotTime helper & TimeSlotButton above
+// The MiniCalendar is unchanged, except for minor references
+
 function MiniCalendar({
   selectedDate,
   setSelectedDate,

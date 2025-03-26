@@ -172,23 +172,63 @@
   }
 }
 
-/* Container that holds the entire two-column layout:
-   left = calendar, right = time slots */
-   .appointment-layout {
-    display: flex;
-    flex-wrap: wrap;
+/* A container that puts left-column & right-column side-by-side */
+.appointment-layout {
+    display: grid;
+    grid-template-columns: 300px auto; /* Left column = 300px wide, right fills */
     gap: 2rem;
   }
   
-  /* Left column with trainer selection and calendar */
+  /* Left column: keep it simple */
   .left-column {
-    flex: 0 0 300px;
-    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
   
-  /* Right column for time slots */
+  /* Right column: no background, just top alignment */
   .right-column {
-    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: flex-start; /* or 'start' */
+    align-items: flex-start;
+    /* Remove or override any background you had */
+    background: none; 
+    width: auto;
+    overflow: visible;
+  }
+  
+  /* The container for time slot buttons: a wrapped grid */
+  .time-slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 1rem;
+    width: 100%;
+  }
+  
+  /* Each time slot as a 'pill' button */
+  .time-slot-button {
+    background-color: #2a70ff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 100%;
+  }
+  
+  /* Hover & active states */
+  .time-slot-button:hover {
+    background-color: #1e58cc; /* darker blue on hover */
+  }
+  
+  .time-slot-button:active {
+    transform: scale(0.97);
   }
   
   /* The mini-calendar’s outer wrapper */

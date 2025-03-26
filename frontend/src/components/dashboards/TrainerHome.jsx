@@ -1,7 +1,7 @@
 import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, Calendar, ClipboardList, ChevronRight, Activity } from "lucide-react";
+import { Bell, Calendar, ClipboardList, ChevronRight } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import tractionLogo from "../../assets/tractionLogoWhite2.png";
@@ -15,10 +15,13 @@ const TrainerHome = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
+  // ADDED: Whether we are showing all appointments or just the first 3
+  const [showAllAppointments, setShowAllAppointments] = useState(false);
+
   useEffect(() => {
     if (!user){
       console.log("User Not detected");
-        return;
+      return;
     }
 
     const fetchUserData = async () => {
@@ -30,13 +33,12 @@ const TrainerHome = () => {
         });
 
         const data = await response.json();
-        console.log(data)
+        console.log(data);
         if (!data || !data.id) {
-          console.log("No User found")
+          console.log("No User found");
           navigate("/create-account");
-        // } else if (data.role !== "Trainer") {
-
-        //   navigate(`/${data.role}/dashboard`);
+          // } else if (data.role !== "Trainer") {
+          //   navigate(`/${data.role}/dashboard`);
         } else {
           setUserData(data);
         }
@@ -47,7 +49,9 @@ const TrainerHome = () => {
 
     const fetchAppointments = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/trainers/get-appointments/${user.id}`);
+        const response = await fetch(
+          `http://localhost:8000/api/trainers/get-appointments/${user.id}`
+        );
         const data = await response.json();
         setAppointments(data.appointments);
       } catch (error) {
@@ -57,7 +61,9 @@ const TrainerHome = () => {
 
     const fetchNotifications = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/system/get-notifications/${user.id}`);
+        const response = await fetch(
+          `http://localhost:8000/api/system/get-notifications/${user.id}`
+        );
         const data = await response.json();
         setNotifications(data.notifications);
       } catch (error) {
@@ -95,6 +101,11 @@ const TrainerHome = () => {
     }).format(date);
   };
 
+  // CHANGED: We decide which appointments to show based on showAllAppointments
+  const displayedAppointments = showAllAppointments 
+    ? appointments 
+    : appointments.slice(0, 3);
+
   return (
     <div className="trainer-dashboard">
       {/* Hero section */}
@@ -116,8 +127,10 @@ const TrainerHome = () => {
         {/* Quick Actions */}
         <h2 className="section-title">Quick Actions</h2>
         <div className="quick-actions">
-
-          <Button className="action-card green-card" onClick={() => navigate("/browse-treatment-plans")}>
+          <Button 
+            className="action-card green-card" 
+            onClick={() => navigate("/browse-treatment-plans")}
+          >
             <CardHeader className="action-card-header">
               <div className="action-card-title-row">
                 <div className="action-card-title-content">
@@ -130,11 +143,14 @@ const TrainerHome = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <p className="action-description">Browse and Mangage rehab programs</p>
+              <p className="action-description">Browse and Manage rehab programs</p>
             </CardContent>
           </Button>
 
-          <Button className="action-card green-card" onClick={() => navigate("/trainer/set-availability")}>
+          <Button 
+            className="action-card green-card" 
+            onClick={() => navigate("/trainer/set-availability")}
+          >
             <CardHeader className="action-card-header">
               <div className="action-card-title-row">
                 <div className="action-card-title-content">
@@ -150,7 +166,6 @@ const TrainerHome = () => {
               <p className="action-description">Set your schedule for upcoming dates</p>
             </CardContent>
           </Button>
-
         </div>
 
         {/* Appointments & Notifications */}
@@ -163,29 +178,38 @@ const TrainerHome = () => {
                   <Calendar className="info-card-icon blue-text" />
                   <CardTitle>Upcoming Appointments</CardTitle>
                 </div>
+                {/* ADDED: Toggle button for Show All vs. only first 3 */}
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  onClick={() => navigate("/schedule-appointment")}
+                  onClick={() => setShowAllAppointments(!showAllAppointments)} 
                   className="view-all-button blue-button"
                 >
-                  View All
+                  {showAllAppointments ? "Show Less" : "View All"}
                 </Button>
               </div>
             </CardHeader>
             <CardContent className="info-card-content">
               {appointments.length > 0 ? (
                 <ul className="appointments-list">
-                  {appointments.slice(0, 3).map((appt) => (
-                    <li key={appt.id || `appt-${appt.date}-${appt.time}`} className="appointment-item">
+                  {displayedAppointments.map((appt) => (
+                    <li 
+                      key={appt.id || `appt-${appt.date}-${appt.time}`} 
+                      className="appointment-item"
+                    >
                       <div className="appointment-content">
                         <div className="appointment-date">
                           <div className="date-short">{formatDate(appt.date).split(' ')[0]}</div>
-                          <div className="date-day">{formatDate(appt.date).split(' ')[1]} {formatDate(appt.date).split(' ')[2]}</div>
+                          <div className="date-day">
+                            {formatDate(appt.date).split(' ')[1]}{" "}
+                            {formatDate(appt.date).split(' ')[2]}
+                          </div>
                         </div>
                         <div className="appointment-details">
                           <p className="appointment-time">{appt.time}</p>
-                          <p className="appointment-trainer">with {appt.athlete_name}</p>
+                          <p className="appointment-trainer">
+                            with {appt.athlete_name}
+                          </p>
                         </div>
                       </div>
                       <Button 
@@ -236,7 +260,10 @@ const TrainerHome = () => {
               {notifications.length > 0 ? (
                 <ul className="notifications-list">
                   {notifications.slice(0, 4).map((notif) => (
-                    <li key={notif.id || `notif-${notif.message?.substring(0, 10)}`} className="notification-item">
+                    <li 
+                      key={notif.id || `notif-${notif.message?.substring(0, 10)}`} 
+                      className="notification-item"
+                    >
                       <div className="notification-content">
                         <div className="notification-icon-container">
                           <Bell className="notification-icon" />
