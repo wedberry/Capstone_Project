@@ -303,3 +303,15 @@
     font-weight: bold;
   }
   
+  .weekday-row {
+    display: grid;
+    grid-template-columns: repeat(7, 36px); /* same width as your day cells */
+    justify-content: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .weekday-label {
+    text-align: center;
+    font-weight: 600;
+    /* or anything else you like */
+  }
