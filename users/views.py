@@ -31,8 +31,11 @@ def get_user(request, clerk_id):
         role = user.role
 
         sport = user.sport
+        
+        phone = user.phone
+        email = user.email
 
-        return JsonResponse({'exists': exists, 'id': id, 'first_name': first_name, 'last_name': last_name, 'role': role, 'sport': sport})
+        return JsonResponse({'exists': exists, 'id': id, 'first_name': first_name, 'last_name': last_name, 'role': role, 'sport': sport, 'phone': phone, 'email': email})
     
     except Exception as e:
         return JsonResponse({"error": f"{e}"}, status=400)
@@ -55,3 +58,49 @@ def create_user(request):
             )
             return JsonResponse({"success": True})
         return JsonResponse({"error": "User already exists"}, status=400)
+
+# Used by profile page to update user info. Can be used in all dashboards
+@csrf_exempt
+@require_http_methods(["PUT"])
+def update_user(request, clerk_id):
+    try:
+        user = CustomUser.objects.get(clerk_id=clerk_id)
+        data = json.loads(request.body)
+        
+        # Update fields if they exist in the request
+        if 'first_name' in data:
+            user.first_name = data['first_name']
+        if 'last_name' in data:
+            user.last_name = data['last_name']
+        if 'email' in data:
+            user.email = data['email']
+        if 'phone' in data:
+            user.phone = data['phone']
+        if 'sport' in data:
+            user.sport = data['sport']
+            
+        # Save the changes
+        user.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Profile updated successfully',
+            'data': {
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email,
+                'phone': user.phone,
+                'sport': user.sport
+            }
+        })
+        
+    except CustomUser.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'error': 'User not found'
+        }, status=404)
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)

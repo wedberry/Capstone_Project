@@ -8,6 +8,7 @@ from django.http import JsonResponse
 def get_coach_dashboard(request):
     return Response({"message": "Coach Dashboard"})
 
+# Get all users athletes that match the coach's sport
 @api_view(['GET'])
 def get_team_members(request, coach_id):
     try:

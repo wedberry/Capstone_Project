@@ -22,6 +22,7 @@ import SetAvailability from "./components/utils/SetAvailability";
 // Coach Pages
 import CoachHome from "./components/dashboards/CoachHome";
 import PlayerList from "./components/utils/PlayerList";
+import CoachProfile from "./components/utils/CoachProfile";
 
 const ProtectedRoute = ({ element }) => {
   const { user } = useUser();
@@ -141,6 +142,14 @@ function App() {
           }
         />
 
+        <Route
+          path="/coach/profile"
+          element={
+            <SignedIn>
+              <CoachProfile />
+            </SignedIn>
+          }
+        />
         {/* 🚫 Redirect Logged-Out Users to Sign-In */}
         <Route
           path="/protected"
