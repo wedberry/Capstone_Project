@@ -1,7 +1,8 @@
 import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Calendar, Users, ClipboardList, Settings, Activity } from "lucide-react";
+import { Calendar, Users, ClipboardList, Settings, Activity, UserCircle } from "lucide-react";
+import { Button } from "../ui/button";
 import tractionLogo from "../../assets/tractionLogoWhite2.png";
 import "./AthleteHome.css";
 
@@ -98,6 +99,13 @@ const CoachHome = () => {
               <h1>Welcome back, {userData.first_name}!</h1>
               <p>Track your progress and manage your training schedule</p>
             </div>
+            <Button
+              variant="ghost"
+              className="profile-button"
+              onClick={() => navigate("/coach/profile")}
+            >
+              <UserCircle size={24} />
+            </Button>
           </div>
         </div>
       </div>
