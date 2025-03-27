@@ -102,7 +102,8 @@ def get_appointments(request, athlete_id):
             "time": str(a.time),
             "trainer_id": a.trainer_id,
             "trainer_name": trainer_name,
-            "athlete_name": athlete_name
+            "athlete_name": athlete_name,
+            "notes": a.notes,
         })
 
     print(data)
@@ -182,6 +183,7 @@ def book_availability(request):
     slot_id = request.data.get('slot_id')
     athlete_id = request.data.get('athlete_id')
     appointment_type = request.data.get('appointment_type', 'treatment')  # default 30 min
+    notes = request.data.get('notes', '') 
 
     try:
         slot = TrainerAvailability.objects.get(id=slot_id)
@@ -201,7 +203,8 @@ def book_availability(request):
         trainer_id=slot.trainer_id,
         date=slot.date,
         time=slot.start_time,
-        appointment_type=appointment_type
+        appointment_type=appointment_type,
+        notes=notes
     )
 
     return Response({"success": True, "message": "Appointment created"})
