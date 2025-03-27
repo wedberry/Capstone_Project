@@ -277,28 +277,52 @@ function ScheduleAppointment() {
   );
 }
 
-// CHANGED: Moved the formatSlotTime helper & TimeSlotButton above
-// The MiniCalendar is unchanged, except for minor references
+
 
 function MiniCalendar({
+  displayedYear,
+  displayedMonth,
+  setDisplayedMonth,   
+  setDisplayedYear,    
   selectedDate,
   setSelectedDate,
-  displayedMonth,
-  setDisplayedMonth,
-  displayedYear,
-  setDisplayedYear,
 }) {
-  const daysInMonth = new Date(displayedYear, displayedMonth + 1, 0).getDate();
-  const monthName = new Date(displayedYear, displayedMonth).toLocaleString("default", {
-    month: "long",
-  });
+  const DAYS_IN_WEEK = 7;
 
-  const handleDayClick = (day) => {
+  const daysInMonth = new Date(displayedYear, displayedMonth + 1, 0).getDate();
+  const firstDayWeekday = new Date(displayedYear, displayedMonth, 1).getDay();
+
+  const calendarCells = [];
+  for (let i = 0; i < firstDayWeekday; i++) {
+    calendarCells.push(null); // blank cells before day 1
+  }
+  for (let day = 1; day <= daysInMonth; day++) {
+    calendarCells.push(day);
+  }
+  while (calendarCells.length % 7 !== 0) {
+    calendarCells.push(null);
+  }
+
+  const weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  function isSelected(day) {
+    if (!day) return false;
+    const testDate = new Date(displayedYear, displayedMonth, day);
+    return (
+      selectedDate.getFullYear() === testDate.getFullYear() &&
+      selectedDate.getMonth() === testDate.getMonth() &&
+      selectedDate.getDate() === testDate.getDate()
+    );
+  }
+
+  function handleDayClick(day) {
+    if (!day) return;
     const newDate = new Date(displayedYear, displayedMonth, day);
     setSelectedDate(newDate);
-  };
+  }
 
-  const handlePrevMonth = () => {
+  // Make sure these are INSIDE the function:
+  function handlePrevMonth() {
     let newMonth = displayedMonth - 1;
     let newYear = displayedYear;
     if (newMonth < 0) {
@@ -307,9 +331,9 @@ function MiniCalendar({
     }
     setDisplayedMonth(newMonth);
     setDisplayedYear(newYear);
-  };
+  }
 
-  const handleNextMonth = () => {
+  function handleNextMonth() {
     let newMonth = displayedMonth + 1;
     let newYear = displayedYear;
     if (newMonth > 11) {
@@ -318,12 +342,7 @@ function MiniCalendar({
     }
     setDisplayedMonth(newMonth);
     setDisplayedYear(newYear);
-  };
-
-  const isSameDate = (d1, d2) =>
-    d1.getFullYear() === d2.getFullYear() &&
-    d1.getMonth() === d2.getMonth() &&
-    d1.getDate() === d2.getDate();
+  }
 
   return (
     <div className="mini-calendar-wrapper">
@@ -332,24 +351,36 @@ function MiniCalendar({
           &#8249;
         </button>
         <span className="month-label">
-          {monthName} {displayedYear}
+          {new Date(displayedYear, displayedMonth).toLocaleString("default", {
+            month: "long",
+          })}{" "}
+          {displayedYear}
         </span>
         <button className="arrow-btn" onClick={handleNextMonth}>
           &#8250;
         </button>
       </div>
-      <div className="calendar-days-grid">
-        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => {
-          const dateObj = new Date(displayedYear, displayedMonth, day);
-          const selected = isSameDate(selectedDate, dateObj);
 
+      <div className="weekday-row">
+        {weekdayLabels.map((label) => (
+          <div key={label} className="weekday-label">
+            {label}
+          </div>
+        ))}
+      </div>
+
+      <div className="calendar-days-grid">
+        {calendarCells.map((day, index) => {
+          const selected = isSelected(day);
           return (
             <div
-              key={day}
-              className={`day-cell ${selected ? "selected-day" : ""}`}
+              key={index}
+              className={`day-cell ${selected ? "selected-day" : ""} ${
+                day ? "" : "empty-cell"
+              }`}
               onClick={() => handleDayClick(day)}
             >
-              {day}
+              {day || ""}
             </div>
           );
         })}
