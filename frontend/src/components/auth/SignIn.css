@@ -17,7 +17,7 @@
 }
 
 /* Right column */
-.right-column {
+.sign-in-container .right-column {
   position: relative;
   width: 50%;
   background-color: #0072BC;
@@ -25,7 +25,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: relative;
   overflow: hidden;
 }
 
@@ -62,7 +61,7 @@
 }
 
 /* Add a third bubble */
-.right-column .bubble {
+.sign-in-container .right-column .bubble {
   content: '';
   position: absolute;
   width: 300px;

@@ -1,7 +1,7 @@
 import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, Calendar, ClipboardList, ChevronRight } from "lucide-react";
+import { Bell, Calendar, ClipboardList, ChevronRight, Users } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import tractionLogo from "../../assets/tractionLogoWhite2.png";
@@ -126,6 +126,7 @@ const TrainerHome = () => {
       <div className="dashboard-container">
         {/* Quick Actions */}
         <h2 className="section-title">Quick Actions</h2>
+
         <div className="quick-actions">
           <Button 
             className="action-card green-card" 
