@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader } from "../ui/card";
 import tractionLogo from "../../assets/tractionLogoWhite2.png";
 import "./CoachProfile.css";
 
+
+// I think the best way to do this. Probably should pull from backend but whatever
 const SPORT_CHOICES = [
   { value: 'baseball', label: 'Baseball' },
   { value: 'mbasketball', label: 'Mens Basketball' },
@@ -31,6 +33,7 @@ const SPORT_CHOICES = [
   { value: 'wski', label: 'Womens Waterski' },
 ];
 
+// Normal states got from other dashboards
 const CoachProfile = () => {
   const { user } = useUser();
   const navigate = useNavigate();
@@ -46,6 +49,7 @@ const CoachProfile = () => {
     sport: '',
   });
 
+  // Fetches
   useEffect(() => {
     const fetchCoachData = async () => {
       try {
