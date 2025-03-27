@@ -1,7 +1,7 @@
 import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Calendar, Users, ClipboardList, Settings, Activity, UserCircle } from "lucide-react";
+import { Calendar, Users, ClipboardList, Settings, Activity, UserCircle, MessageCircle, Bell } from "lucide-react";
 import { Button } from "../ui/button";
 import tractionLogo from "../../assets/tractionLogoWhite2.png";
 import "./AthleteHome.css";
@@ -118,7 +118,9 @@ const CoachHome = () => {
         {/* Quick Actions */}
         <h2 className="section-title">Quick Actions</h2>
         <div className="quick-actions">
+
           {/* View Team Card */}
+
           <div className="action-card blue-card" onClick={() => navigate("/coach/players")}>
             <div className="action-card-header">
               <div className="action-card-title-row">
@@ -133,6 +135,39 @@ const CoachHome = () => {
             </div>
             <p className="action-description">View and manage your team members</p>
           </div>
+
+          {/* Send Message Card */}
+          <div className="action-card blue-card" onClick={() => navigate("/coach/messages")}>
+            <div className="action-card-header">
+              <div className="action-card-title-row">
+                <div className="action-card-title-content">
+                  <div className="action-icon-container blue-icon">
+                    <MessageCircle />
+                  </div>
+                  <h3>Send Message</h3>
+                </div>
+                <div className="action-chevron">→</div>
+              </div>
+            </div>
+            <p className="action-description">Send a message to athletes or trainers</p>
+          </div>
+
+          {/* View Notifications Card*/}
+          <div className="action-card blue-card" onClick={() => navigate("/coach/notifications")}>
+            <div className="action-card-header">
+              <div className="action-card-title-row">
+                <div className="action-card-title-content">
+                  <div className="action-icon-container blue-icon">
+                    <Bell />
+                  </div>
+                  <h3>View Notifications</h3>
+                </div>
+                <div className="action-chevron">→</div>
+              </div>
+            </div>
+            <p className="action-description">View your notifications</p>
+          </div>
+
         </div>
       </div>
     </div>

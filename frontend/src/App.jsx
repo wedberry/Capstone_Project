@@ -11,6 +11,7 @@ import CreateAccountPage from "./components/auth/CreateAccountPage";
 // Athlete Pages
 import AthleteHome from "./components/dashboards/AthleteHome";
 import ScheduleAppointment from "./components/utils/ScheduleAppointment";
+import AthleteProfile from "./components/utils/AthleteProfile";
 
 // Trainer Pages
 import TrainerHome from "./components/dashboards/TrainerHome";
@@ -18,11 +19,14 @@ import CreateTreatmentPlan from "./components/utils/CreateTreatmentPlan";
 import BroseTreatmentPlans from "./components/utils/BrowseTreatmentPlans";
 import EditTreatmentPlan from "./components/utils/EditTreatmentPlan";
 import SetAvailability from "./components/utils/SetAvailability";
+import TrainerProfile from "./components/utils/TrainerProfile";
 
 // Coach Pages
 import CoachHome from "./components/dashboards/CoachHome";
 import PlayerList from "./components/utils/PlayerList";
 import CoachProfile from "./components/utils/CoachProfile";
+import Message from "./components/utils/Message";
+import Notifications from "./components/utils/Notifications";
 
 const ProtectedRoute = ({ element }) => {
   const { user } = useUser();
@@ -76,6 +80,15 @@ function App() {
           }
         />
 
+        <Route
+          path="/athlete/profile"
+          element={
+            <SignedIn>
+              <AthleteProfile />
+            </SignedIn>
+          }
+        />
+
         {/* 🔐 Trainer Routes */}
         <Route
           path="/trainer/dashboard"
@@ -122,7 +135,15 @@ function App() {
           }
         />
 
-
+        <Route
+          path="/trainer/profile"
+          element={
+            <SignedIn>
+              <TrainerProfile />
+            </SignedIn>
+          }
+        />
+        
         {/* 🔐 Coach Routes */}   
         <Route
           path="/coach/dashboard"
@@ -147,6 +168,23 @@ function App() {
           element={
             <SignedIn>
               <CoachProfile />
+            </SignedIn>
+          }
+        />
+        <Route 
+          path="/coach/messages"
+          element={
+            <SignedIn>
+              <Message />
+            </SignedIn>
+          }
+        />
+
+        <Route 
+          path="/coach/notifications"
+          element={
+            <SignedIn>
+              <Notifications />
             </SignedIn>
           }
         />

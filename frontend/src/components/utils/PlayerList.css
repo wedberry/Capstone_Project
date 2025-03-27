@@ -96,35 +96,57 @@
   font-weight: 500;
 }
 
-.player-list {
+.player-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
+  padding: 1rem;
 }
 
 .player-card {
-  background-color: white;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #e5e7eb;
 }
 
 .player-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.player-card-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.player-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.player-info {
+  flex: 1;
+}
+
 .player-info h3 {
-  font-size: 1.25rem;
-  color: #1e293b;
-  margin-bottom: 0.5rem;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
 }
 
 .player-email, .player-phone {
-  color: #64748b;
+  margin: 0.25rem 0 0;
   font-size: 0.875rem;
-  margin: 0.25rem 0;
+  color: #6b7280;
 }
 
 .empty-state {
@@ -146,24 +168,21 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 2rem;
-  text-align: center;
-  background-color: #f8fafc;
 }
 
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid #e2e8f0;
+  border: 4px solid #f3f4f6;
   border-top: 4px solid #3b82f6;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
 }
 
 .loading-text {
-  color: #64748b;
-  font-size: 1.125rem;
+  margin-top: 1rem;
+  color: #6b7280;
+  font-size: 0.875rem;
 }
 
 .error-container {
@@ -174,13 +193,11 @@
   min-height: 100vh;
   padding: 2rem;
   text-align: center;
-  background-color: #f8fafc;
 }
 
 .error-message {
   color: #ef4444;
-  font-size: 1.25rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .error-button {
@@ -222,5 +239,11 @@
   
   .home-button {
     margin: 1rem auto 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .player-grid {
+    grid-template-columns: 1fr;
   }
 } 

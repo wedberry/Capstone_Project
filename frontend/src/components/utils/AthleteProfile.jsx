@@ -34,10 +34,10 @@ const SPORT_CHOICES = [
 ];
 
 // Normal states got from other dashboards
-const CoachProfile = () => {
+const AthleteProfile = () => {
   const { user } = useUser();
   const navigate = useNavigate();
-  const [coachData, setCoachData] = useState(null);
+  const [athleteData, setAthleteData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -51,7 +51,7 @@ const CoachProfile = () => {
 
   // Fetches
   useEffect(() => {
-    const fetchCoachData = async () => {
+    const fetchAthleteData = async () => {
       try {
         const response = await fetch(`http://localhost:8000/api/users/get-user/${user.id}`, {
           method: "GET",
@@ -65,14 +65,12 @@ const CoachProfile = () => {
           return;
         }
 
-        if (data.role.toLowerCase() !== "coach") {
+        if (data.role.toLowerCase() !== "athlete") {
           navigate(`/${data.role.toLowerCase()}/dashboard`);
           return;
         }
 
-        console.log("Coach data:", data); // Debug log
-
-        setCoachData(data);
+        setAthleteData(data);
         setFormData({
           first_name: data.first_name || '',
           last_name: data.last_name || '',
@@ -81,7 +79,7 @@ const CoachProfile = () => {
           sport: data.sport || '',
         });
       } catch (error) {
-        setError("Failed to fetch coach data");
+        setError("Failed to fetch athlete data");
         console.error("Error:", error);
       } finally {
         setIsLoading(false);
@@ -89,7 +87,7 @@ const CoachProfile = () => {
     };
 
     if (user) {
-      fetchCoachData();
+      fetchAthleteData();
     }
   }, [user, navigate]);
 
@@ -117,7 +115,7 @@ const CoachProfile = () => {
 
       const data = await response.json();
       if (data.success) {
-        setCoachData(prev => ({ ...prev, ...formData }));
+        setAthleteData(prev => ({ ...prev, ...formData }));
         setIsEditing(false);
         setError(null);
       } else {
@@ -142,7 +140,7 @@ const CoachProfile = () => {
     return (
       <div className="error-container">
         <p className="error-message">{error}</p>
-        <Button onClick={() => navigate("/coach/dashboard")}>
+        <Button onClick={() => navigate("/athlete/dashboard")}>
           Return to Dashboard
         </Button>
       </div>
@@ -150,7 +148,7 @@ const CoachProfile = () => {
   }
 
   return (
-    <div className="coach-profile-page">
+    <div className="athlete-profile-page">
       {/* Hero Section */}
       <div className="hero-section">
         <div className="hero-container">
@@ -159,13 +157,13 @@ const CoachProfile = () => {
               <img src={tractionLogo} alt="Traction Logo" className="hero-logo-image" />
             </div>
             <div className="hero-text">
-              <h1>Coach Profile</h1>
+              <h1>Athlete Profile</h1>
               <p>Manage your personal information and credentials</p>
             </div>
             <Button
               variant="ghost"
               className="home-button"
-              onClick={() => navigate("/coach/dashboard")}
+              onClick={() => navigate("/athlete/dashboard")}
             >
               <Home size={20} />
               Home
@@ -182,8 +180,8 @@ const CoachProfile = () => {
                 <UserCircle size={80} />
               </div>
               <div className="profile-title">
-                <h2>{coachData?.first_name} {coachData?.last_name}</h2>
-                <p className="profile-subtitle">{coachData?.sport} Coach</p>
+                <h2>{athleteData?.first_name} {athleteData?.last_name}</h2>
+                <p className="profile-subtitle">{athleteData?.sport} Athlete</p>
               </div>
             </div>
           </CardHeader>
@@ -277,11 +275,11 @@ const CoachProfile = () => {
                       onClick={() => {
                         setIsEditing(false);
                         setFormData({
-                          first_name: coachData.first_name || '',
-                          last_name: coachData.last_name || '',
-                          email: coachData.email || '',
-                          phone: coachData.phone || '',
-                          sport: coachData.sport || '',
+                          first_name: athleteData.first_name || '',
+                          last_name: athleteData.last_name || '',
+                          email: athleteData.email || '',
+                          phone: athleteData.phone || '',
+                          sport: athleteData.sport || '',
                         });
                       }}
                     >
@@ -298,4 +296,4 @@ const CoachProfile = () => {
   );
 };
 
-export default CoachProfile;
+export default AthleteProfile;

@@ -19,7 +19,6 @@ def check_user(request, clerk_id):
 @csrf_exempt
 @require_http_methods(["GET", "OPTIONS"])
 def get_user(request, clerk_id):
-
     try:
         user = CustomUser.objects.get(clerk_id=clerk_id)
         exists = True if user else False

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
-import { Home } from "lucide-react";
+import { Home, UserCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import tractionLogo from "../../assets/tractionLogoWhite2.png";
 import "./PlayerList.css";
@@ -64,6 +64,10 @@ const PlayerList = () => {
     }
   }, [user, navigate]);
 
+  const handlePlayerClick = (playerId) => {
+    navigate(`/coach/player-profile/${playerId}`);
+  };
+
   if (isLoading) {
     return (
       <div className="loading-container">
@@ -114,22 +118,28 @@ const PlayerList = () => {
       </div>
 
       <div className="player-list-container">
-        <div className="player-list">
-          {teamMembers.length === 0 ? (
-            <div className="empty-state">
-              <p className="empty-state-text">No team members found</p>
-            </div>
-          ) : (
-            teamMembers.map((member) => (
-              <div key={member.id} className="player-card">
-                <div className="player-info">
-                  <h3>{member.first_name} {member.last_name}</h3>
-                  <p className="player-email">{member.email}</p>
-                  <p className="player-phone">{member.phone}</p>
+        <div className="player-grid">
+          {teamMembers.map((member) => (
+            <div 
+              key={member.id} 
+              className="action-card blue-card"
+              onClick={() => handlePlayerClick(member.id)}
+            >
+              <div className="action-card-header">
+                <div className="action-card-title-row">
+                  <div className="action-card-title-content">
+                    <div className="action-icon-container blue-icon">
+                      <UserCircle />
+                    </div>
+                    <h3>{member.first_name} {member.last_name}</h3>
+                  </div>
+                  <div className="action-chevron">→</div>
                 </div>
               </div>
-            ))
-          )}
+              <p className="action-description">{member.email}</p>
+              <p className="action-description">{member.phone}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>
