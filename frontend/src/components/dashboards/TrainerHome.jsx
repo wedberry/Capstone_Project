@@ -128,24 +128,6 @@ const TrainerHome = () => {
         <h2 className="section-title">Quick Actions</h2>
 
         <div className="quick-actions">
-          {/* Assigning Athletes a treatement plan */}
-          <div className="action-card blue-card" onClick={() => navigate("/trainer/assign-treatment-plan")}>
-            <div className="action-card-header">
-              <div className="action-card-title-row">
-                <div className="action-card-title-content">
-                  <div className="action-icon-container blue-icon">
-                    <Users />
-                  </div>
-                  <h3>Assign Treatment Plan</h3>
-                </div>
-                <div className="action-chevron">→</div>
-              </div>
-            </div>
-            <p className="action-description">Assign a treatment plan to an athlete</p>
-          </div>
-        </div>
-
-        <div className="quick-actions">
           <Button 
             className="action-card green-card" 
             onClick={() => navigate("/browse-treatment-plans")}
