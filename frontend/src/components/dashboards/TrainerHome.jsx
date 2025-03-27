@@ -217,8 +217,10 @@ const TrainerHome = () => {
                         <div className="appointment-details">
                           <p className="appointment-time">{appt.time}</p>
                           <p className="appointment-trainer">
+                    
                             with {appt.athlete_name}
                           </p>
+                          <p>Notes: {appt.notes || " "}</p> 
                         </div>
                       </div>
                       <Button 

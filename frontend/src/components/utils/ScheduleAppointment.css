@@ -315,3 +315,20 @@
     font-weight: 600;
     /* or anything else you like */
   }
+  .confirm-button {
+    background: linear-gradient(to right, #2a70ff, #6787f0); /* Gradient */
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 25px;
+    transition: transform 0.2s;
+}
+
+.confirm-button:hover {
+    transform: scale(1.05);}
