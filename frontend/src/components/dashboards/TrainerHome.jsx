@@ -1,7 +1,7 @@
 import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, Calendar, ClipboardList, ChevronRight, Users } from "lucide-react";
+import { Bell, Calendar, ClipboardList, ChevronRight, Users, UserCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import tractionLogo from "../../assets/tractionLogoWhite2.png";
@@ -119,6 +119,13 @@ const TrainerHome = () => {
               <h1>Welcome back, {userData.first_name}!</h1>
               <p>Manage your treatment options and schedule</p>
             </div>
+            <Button
+              variant="ghost"
+              className="profile-button"
+              onClick={() => navigate("/trainer/profile")}
+            >
+              <UserCircle size={24} />
+            </Button>
           </div>
         </div>
       </div>
@@ -128,6 +135,7 @@ const TrainerHome = () => {
         <h2 className="section-title">Quick Actions</h2>
 
         <div className="quick-actions">
+          
           <Button 
             className="action-card green-card" 
             onClick={() => navigate("/browse-treatment-plans")}
