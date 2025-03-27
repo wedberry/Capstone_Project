@@ -56,3 +56,4 @@ coverage/
 *.so
 *.a
 *.class
+db.sqlite3
