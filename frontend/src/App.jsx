@@ -18,9 +18,11 @@ import CreateTreatmentPlan from "./components/utils/CreateTreatmentPlan";
 import BroseTreatmentPlans from "./components/utils/BrowseTreatmentPlans";
 import EditTreatmentPlan from "./components/utils/EditTreatmentPlan";
 import SetAvailability from "./components/utils/SetAvailability";
+import TreatmentAssign from "./components/utils/TreatmentAssign";
 
 // Coach Pages
 import CoachHome from "./components/dashboards/CoachHome";
+import PlayerList from "./components/utils/PlayerList";
 
 const ProtectedRoute = ({ element }) => {
   const { user } = useUser();
@@ -120,12 +122,29 @@ function App() {
           }
         />
 
+        <Route
+          path="/trainer/assign-treatment-plan"
+          element={
+            <SignedIn>
+              <TreatmentAssign />
+            </SignedIn>
+          }
+        />
         {/* 🔐 Coach Routes */}   
         <Route
           path="/coach/dashboard"
           element={
             <SignedIn>
               <CoachHome />
+            </SignedIn>
+          }
+        />
+
+        <Route
+          path="/coach/players"
+          element={
+            <SignedIn>
+              <PlayerList />
             </SignedIn>
           }
         />
