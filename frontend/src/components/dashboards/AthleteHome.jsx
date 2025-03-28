@@ -187,7 +187,7 @@ const AthleteHome = () => {
           {/* Notifications Card */}
           <Card
             className="action-card red-card"
-            onClick={() => navigate("/notifications")}
+            onClick={() => navigate("/athlete/notifications")}
           >
             <CardHeader className="action-card-header">
               <div className="action-card-title-row">
@@ -294,7 +294,7 @@ const AthleteHome = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => navigate("/notifications")}
+                  onClick={() => navigate("/athlete/notifications")}
                   className="view-all-button red-button"
                 >
                   View All
