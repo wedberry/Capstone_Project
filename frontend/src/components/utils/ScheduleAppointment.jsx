@@ -24,8 +24,12 @@ function ScheduleAppointment() {
   const [displayedMonth, setDisplayedMonth] = useState(selectedDate.getMonth());
   const [displayedYear, setDisplayedYear] = useState(selectedDate.getFullYear());
 
-  // Appointment type: 15 or 30 min
+  // Appointment type
   const [appointmentType, setAppointmentType] = useState("treatment");
+  
+  // CHANGED: Store the selected slot & user notes
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [notes, setNotes] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -64,7 +68,7 @@ function ScheduleAppointment() {
     fetchAvailability();
   }, [selectedTrainer, selectedDate]);
 
-  // 3) Merge consecutive 15-min slots for 30-min appointment types
+  // 3) Merge consecutive 15-min slots for 30-min types
   useEffect(() => {
     if (!slots.length) {
       setMergedSlots([]);
@@ -103,15 +107,23 @@ function ScheduleAppointment() {
     setMergedSlots(combined);
   }, [slots, appointmentType]);
 
-  // 4) Book a slot
-  const handleBook = async (slot) => {
+  // 4) Book the chosen slot with notes
+  const handleBook = async () => {
+    if (!selectedSlot) {
+      alert("Please select a time slot first.");
+      return;
+    }
     try {
       await axios.post("http://localhost:8000/api/trainers/book-availability/", {
-        slot_id: slot.id,
+        slot_id: selectedSlot.id,
         athlete_id: user.id,
         appointment_type: appointmentType,
+        notes, // send the notes
       });
       alert("Appointment booked!");
+      // reset states
+      setSelectedSlot(null);
+      setNotes("");
       navigate("/athlete/dashboard");
     } catch (err) {
       console.error("Error booking slot:", err);
@@ -119,7 +131,6 @@ function ScheduleAppointment() {
     }
   };
 
-  // CHANGED: Helper to format "HH:MM:SS" => "H:MM am/pm"
   function formatSlotTime(timeStr) {
     const [hour, minute] = timeStr.split(":");
     let hh = parseInt(hour, 10);
@@ -130,8 +141,7 @@ function ScheduleAppointment() {
     return `${hh}:${minute} ${ampm}`;
   }
 
-  // ADDED: Inline hover approach for button
-  // A small component that tracks hover to lighten color
+  // Instead of auto booking, we pick a slot to store in state
   function TimeSlotButton({ slot }) {
     const [isHover, setIsHover] = useState(false);
 
@@ -139,7 +149,7 @@ function ScheduleAppointment() {
       position: "relative",
       zIndex: 9999,
       pointerEvents: "auto",
-      backgroundColor: isHover ? "#91c2ff" : "#2a70ff", // light blue on hover
+      backgroundColor: isHover ? "#91c2ff" : "#2a70ff",
       color: "#fff",
       border: "none",
       borderRadius: "6px",
@@ -156,9 +166,11 @@ function ScheduleAppointment() {
     return (
       <button
         style={style}
-        onMouseEnter={() => setIsHover(true)}   // CHANGED: handle hover
-        onMouseLeave={() => setIsHover(false)}  // CHANGED: handle hover
-        onClick={() => handleBook(slot)}
+        onMouseEnter={() => setIsHover(true)}
+        onMouseLeave={() => setIsHover(false)}
+        onClick={() => {
+          setSelectedSlot(slot);  // CHANGED: just pick the slot, not book
+        }}
       >
         {formatSlotTime(slot.start_time)} - {formatSlotTime(slot.end_time)}
       </button>
@@ -262,7 +274,6 @@ function ScheduleAppointment() {
 
                 {selectedTrainer && mergedSlots.length > 0 && (
                   <div className="time-slot-grid">
-                    {/* CHANGED: Use TimeSlotButton for each slot */}
                     {mergedSlots.map((slot, idx) => (
                       <TimeSlotButton key={idx} slot={slot} />
                     ))}
@@ -270,6 +281,33 @@ function ScheduleAppointment() {
                 )}
               </div>
             </div>
+
+            {/* ADDED: Display selected slot info & notes field */}
+            {selectedSlot && (
+              <div className="confirm-section">
+                <h3>Confirm Your Appointment</h3>
+                <p>
+                  You selected: 
+                  <strong> {formatSlotTime(selectedSlot.start_time)} - {formatSlotTime(selectedSlot.end_time)}</strong>
+                  , on <strong>{selectedSlot.date}</strong>
+                </p>
+                <label>
+                  Notes (why are you scheduling?):
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    rows={3}
+                    style={{ width: "100%", marginTop: "0.5rem" }}
+                  />
+                </label>
+                <Button className="confirm-button"
+            
+                  onClick={handleBook}
+                >
+                  Confirm Appointment
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -277,7 +315,7 @@ function ScheduleAppointment() {
   );
 }
 
-
+// The MiniCalendar is the same as you provided, ensuring handlePrevMonth/handleNextMonth are declared inside
 
 function MiniCalendar({
   displayedYear,
@@ -287,14 +325,11 @@ function MiniCalendar({
   selectedDate,
   setSelectedDate,
 }) {
-  const DAYS_IN_WEEK = 7;
-
   const daysInMonth = new Date(displayedYear, displayedMonth + 1, 0).getDate();
   const firstDayWeekday = new Date(displayedYear, displayedMonth, 1).getDay();
-
   const calendarCells = [];
   for (let i = 0; i < firstDayWeekday; i++) {
-    calendarCells.push(null); // blank cells before day 1
+    calendarCells.push(null); 
   }
   for (let day = 1; day <= daysInMonth; day++) {
     calendarCells.push(day);
@@ -321,7 +356,6 @@ function MiniCalendar({
     setSelectedDate(newDate);
   }
 
-  // Make sure these are INSIDE the function:
   function handlePrevMonth() {
     let newMonth = displayedMonth - 1;
     let newYear = displayedYear;
