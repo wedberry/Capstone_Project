@@ -34,6 +34,7 @@ class Appointment(models.Model):
     time = models.TimeField()
     appointment_type = models.CharField(max_length=50)  # e.g. "Consultation", "Treatment", "Clearance"
     max_length=50, 
+    notes = models.TextField(blank=True)
     default="treatment"
 
     def __str__(self):
