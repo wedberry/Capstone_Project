@@ -12,6 +12,7 @@ import CreateAccountPage from "./components/auth/CreateAccountPage";
 import AthleteHome from "./components/dashboards/AthleteHome";
 import ScheduleAppointment from "./components/utils/ScheduleAppointment";
 import AthleteProfile from "./components/utils/AthleteProfile";
+import AthleteNotification from "./components/utils/AthleteNotification";
 
 // Trainer Pages
 import TrainerHome from "./components/dashboards/TrainerHome";
@@ -85,6 +86,14 @@ function App() {
           element={
             <SignedIn>
               <AthleteProfile />
+            </SignedIn>
+          }
+        />
+        <Route
+          path="/athlete/notifications"
+          element={
+            <SignedIn>
+              <AthleteNotification />
             </SignedIn>
           }
         />

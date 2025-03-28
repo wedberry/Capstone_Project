@@ -4,18 +4,43 @@ import { Button } from "../ui/button";
 import { Home, UserCircle, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader } from "../ui/card";
+import { useUser } from "@clerk/clerk-react";
+import axios from 'axios';
 import "./Message.css";
 
 const Message = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [selectedType, setSelectedType] = useState(null);
   const [messageText, setMessageText] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle message submission here
-    console.log('Message to', selectedType, ':', messageText);
-    setMessageText('');
+    if (!messageText.trim()) return;
+
+    setIsSubmitting(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      const response = await axios.post('http://localhost:8000/api/system/send-message/', {
+        clerk_id: user.id,
+        recipient_type: selectedType,
+        content: messageText
+      });
+
+      if (response.data.success) {
+        setSuccess(true);
+        setMessageText('');
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to send message');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -81,9 +106,15 @@ const Message = () => {
                     required
                   />
                 </div>
+                {error && <div className="error-message">{error}</div>}
+                {success && <div className="success-message">Message sent successfully!</div>}
                 <div className="form-actions">
-                  <Button type="submit" className="send-button">
-                    Send Message
+                  <Button 
+                    type="submit" 
+                    className="send-button"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
                   </Button>
                 </div>
               </form>
