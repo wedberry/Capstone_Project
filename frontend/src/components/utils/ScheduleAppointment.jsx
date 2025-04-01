@@ -27,13 +27,15 @@ function ScheduleAppointment() {
   // Appointment type
   const [appointmentType, setAppointmentType] = useState("treatment");
   
-  // CHANGED: Store the selected slot & user notes
+  // Store the selected slot & user notes
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [notes, setNotes] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
 
-  // 1) On mount, fetch trainers
+  /* 
+     1) On mount, fetch trainers 
+  */
   useEffect(() => {
     async function fetchTrainers() {
       try {
@@ -49,7 +51,10 @@ function ScheduleAppointment() {
     fetchTrainers();
   }, []);
 
-  // 2) Whenever trainer+date changes, fetch raw 15-min slots
+  /* 
+     2) Whenever trainer+date changes, fetch raw 15-min slots
+        Then filter out any that are in the past (front-end approach).
+  */
   useEffect(() => {
     if (!selectedTrainer || !selectedDate) return;
 
@@ -59,7 +64,17 @@ function ScheduleAppointment() {
         const resp = await axios.get(
           `http://localhost:8000/api/trainers/availabilities?trainer_id=${selectedTrainer}&date=${dateString}`
         );
-        setSlots(resp.data);
+        let fetchedSlots = resp.data;
+
+        // FRONT-END HIDE PAST SLOTS
+        const now = new Date();
+        fetchedSlots = fetchedSlots.filter(slot => {
+          // combine date + start_time into a Date for comparison
+          const slotDateTime = new Date(`${slot.date}T${slot.start_time}`);
+          return slotDateTime > now; // keep only future
+        });
+
+        setSlots(fetchedSlots);
       } catch (err) {
         console.error("Error fetching availability:", err);
         alert("Failed to load availability.");
@@ -68,36 +83,47 @@ function ScheduleAppointment() {
     fetchAvailability();
   }, [selectedTrainer, selectedDate]);
 
-  // 3) Merge consecutive 15-min slots for 30-min types
+
   useEffect(() => {
     if (!slots.length) {
       setMergedSlots([]);
       return;
     }
 
+   
     const sorted = [...slots].sort((a, b) => a.start_time.localeCompare(b.start_time));
 
-    if (appointmentType === "medical_clearance") {
-      setMergedSlots(sorted);
+    
+    if (appointmentType === "medical_clearance"||"treatment") {
+      setMergedSlots(sorted.map(s => {
+       
+        return {
+          ...s,
+          id: [s.id] 
+        };
+      }));
       return;
     }
 
+    // For 30-min, combine consecutive pairs
     let combined = [];
     let i = 0;
     while (i < sorted.length) {
       const current = sorted[i];
       if (i + 1 < sorted.length) {
         const next = sorted[i + 1];
+        // consecutive if next.start_time == current.end_time
         if (next.start_time === current.end_time) {
-          const combinedSlot = {
-            id: current.id,
+          // store an array of both IDs => [ current.id, next.id ]
+          const mergedSlot = {
+            id: [current.id, next.id],
             date: current.date,
             trainer_id: current.trainer_id,
             trainer_name: current.trainer_name,
             start_time: current.start_time,
             end_time: next.end_time,
           };
-          combined.push(combinedSlot);
+          combined.push(mergedSlot);
           i += 2;
           continue;
         }
@@ -107,25 +133,28 @@ function ScheduleAppointment() {
     setMergedSlots(combined);
   }, [slots, appointmentType]);
 
-  // 4) Book the chosen slot with notes
+  /* 
+     4) Book the chosen slot(s). For 30-min, we have 2 IDs, for 15-min we have 1.
+     Must ensure the back-end loops over each ID to mark it booked.
+  */
   const handleBook = async () => {
     if (!selectedSlot) {
       alert("Please select a time slot first.");
       return;
     }
-    console.log("Booking availability")
-    console.log({
-        slot_id: selectedSlot.id,
-        athlete_id: user.id,
-        appointment_type: appointmentType,
-        notes,
-    })
+    console.log("Booking availability with data:", {
+      slot_ids: selectedSlot.id, 
+      athlete_id: user.id,
+      appointment_type: appointmentType,
+      notes
+    });
     try {
       await axios.post("http://localhost:8000/api/trainers/book-availability/", {
-        slot_id: selectedSlot.id,
+
+        slot_ids: selectedSlot.id, 
         athlete_id: user.id,
         appointment_type: appointmentType,
-        notes, // send the notes
+        notes
       });
       alert("Appointment booked!");
       // reset states
@@ -138,6 +167,7 @@ function ScheduleAppointment() {
     }
   };
 
+  // Helper to format HH:MM:SS => H:MM am/pm
   function formatSlotTime(timeStr) {
     const [hour, minute] = timeStr.split(":");
     let hh = parseInt(hour, 10);
@@ -148,7 +178,7 @@ function ScheduleAppointment() {
     return `${hh}:${minute} ${ampm}`;
   }
 
-  // Instead of auto booking, we pick a slot to store in state
+  // Instead of auto booking on click, we pick a slot in state and show a confirm section
   function TimeSlotButton({ slot }) {
     const [isHover, setIsHover] = useState(false);
 
@@ -176,7 +206,7 @@ function ScheduleAppointment() {
         onMouseEnter={() => setIsHover(true)}
         onMouseLeave={() => setIsHover(false)}
         onClick={() => {
-          setSelectedSlot(slot);  // CHANGED: just pick the slot, not book
+          setSelectedSlot(slot); 
         }}
       >
         {formatSlotTime(slot.start_time)} - {formatSlotTime(slot.end_time)}
@@ -289,7 +319,7 @@ function ScheduleAppointment() {
               </div>
             </div>
 
-            {/* ADDED: Display selected slot info & notes field */}
+            {/* Confirm selection & notes */}
             {selectedSlot && (
               <div className="confirm-section">
                 <h3>Confirm Your Appointment</h3>
@@ -308,7 +338,6 @@ function ScheduleAppointment() {
                   />
                 </label>
                 <Button className="confirm-button"
-            
                   onClick={handleBook}
                 >
                   Confirm Appointment
@@ -322,8 +351,7 @@ function ScheduleAppointment() {
   );
 }
 
-// The MiniCalendar is the same as you provided, ensuring handlePrevMonth/handleNextMonth are declared inside
-
+// The MiniCalendar remains the same as you provided, with handlePrevMonth/handleNextMonth properly defined.
 function MiniCalendar({
   displayedYear,
   displayedMonth,

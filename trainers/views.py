@@ -175,36 +175,43 @@ def get_availabilities(request):
 
 @api_view(['POST'])
 def book_availability(request):
-    """
-    Athlete picks a slot and an appointment_type: "injury_consultation" (30 min),
-    "treatment" (30 min), "medical_clearance" (15 min)
-    """
-    slot_id = request.data.get('slot_id')
+    slot_ids = request.data.get('slot_ids', [])
     athlete_id = request.data.get('athlete_id')
-    appointment_type = request.data.get('appointment_type', 'treatment')  # default 30 min
+    appointment_type = request.data.get('appointment_type', 'treatment')
+    notes = request.data.get('notes', '')
 
-    try:
-        slot = TrainerAvailability.objects.get(id=slot_id)
-    except TrainerAvailability.DoesNotExist:
-        return Response({"error": "Slot not found"}, status=404)
+    # 1) Validate we got a non-empty array
+    if not isinstance(slot_ids, list) or len(slot_ids) == 0:
+        return Response({"error": "slot_ids must be a non-empty array"}, status=400)
 
-    if slot.is_booked:
-        return Response({"error": "Slot already booked"}, status=400)
+    # 2) Check each slot in the DB
+    for sid in slot_ids:
+        try:
+            slot = TrainerAvailability.objects.get(id=sid)
+        except TrainerAvailability.DoesNotExist:
+            return Response({"error": f"Slot {sid} not found"}, status=404)
 
-    # Mark slot as booked
-    slot.is_booked = True
-    slot.save()
+        if slot.is_booked:
+            return Response({"error": f"Slot {sid} already booked"}, status=400)
 
-    # Create an Appointment record
+    # 3) If all are free, mark them all as booked
+    for sid in slot_ids:
+        slot = TrainerAvailability.objects.get(id=sid)
+        slot.is_booked = True
+        slot.save()
+
+    first_slot = TrainerAvailability.objects.get(id=slot_ids[0])
     Appointment.objects.create(
         athlete_id=athlete_id,
-        trainer_id=slot.trainer_id,
-        date=slot.date,
-        time=slot.start_time,
-        appointment_type=appointment_type
+        trainer_id=first_slot.trainer_id,
+        date=first_slot.date,
+        time=first_slot.start_time,
+        appointment_type=appointment_type,
+        notes=notes
     )
 
     return Response({"success": True, "message": "Appointment created"})
+
 
 @api_view(['POST'])
 def bulk_set_availability(request):
