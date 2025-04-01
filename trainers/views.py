@@ -195,6 +195,10 @@ def book_availability(request):
     slot.is_booked = True
     slot.save()
 
+    if appointment_type != "Medical Clearance":
+        next_slot = TrainerAvailability.objects.get(id=int(slot_id) + 1)
+        next_slot.delete()
+
     # Create an Appointment record
     Appointment.objects.create(
         athlete_id=athlete_id,
@@ -317,5 +321,6 @@ def fetchAllAthletes(request):
             'phone': athlete.phone,
             'sport': athlete.sport,
             'clerk_id': athlete.clerk_id,
+            'status': "Healthy"
         })
     return JsonResponse(athletes_data, safe=False)
