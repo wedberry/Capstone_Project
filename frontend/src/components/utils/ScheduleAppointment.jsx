@@ -113,6 +113,13 @@ function ScheduleAppointment() {
       alert("Please select a time slot first.");
       return;
     }
+    console.log("Booking availability")
+    console.log({
+        slot_id: selectedSlot.id,
+        athlete_id: user.id,
+        appointment_type: appointmentType,
+        notes,
+    })
     try {
       await axios.post("http://localhost:8000/api/trainers/book-availability/", {
         slot_id: selectedSlot.id,
