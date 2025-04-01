@@ -21,6 +21,7 @@ import BroseTreatmentPlans from "./components/utils/BrowseTreatmentPlans";
 import EditTreatmentPlan from "./components/utils/EditTreatmentPlan";
 import SetAvailability from "./components/utils/SetAvailability";
 import TrainerProfile from "./components/utils/TrainerProfile";
+import ViewAllAthletes from "./components/utils/ViewAllAthletes";
 
 // Coach Pages
 import CoachHome from "./components/dashboards/CoachHome";
@@ -109,7 +110,7 @@ function App() {
         />
 
         <Route 
-          path="/create-treatment-plan" 
+          path="/create-treatment-plan/:assigning?/:athlete_id?" 
           element={
             <SignedIn>
               <CreateTreatmentPlan />
@@ -149,6 +150,15 @@ function App() {
           element={
             <SignedIn>
               <TrainerProfile />
+            </SignedIn>
+          }
+        />
+
+        <Route
+          path="/trainer/view-athletes"
+          element={
+            <SignedIn>
+              <ViewAllAthletes />
             </SignedIn>
           }
         />

@@ -17,7 +17,7 @@ def save_treatment_plan(request):
             trainer_name=data["trainer_name"],
             injury=data["injury"],
             detailed_plan=data["detailed_plan"],
-            estimated_RTC=data["estimated_completion"],
+            duration=data["duration"],
         )
         return JsonResponse({"success": True})
     
@@ -56,8 +56,8 @@ def update_treatment_plan(request):
         treatment_plan.trainer_name = data.get('trainer_name', treatment_plan.trainer_name)
         treatment_plan.injury = data.get('injury', treatment_plan.injury)
 
-        if data.get('estimated_completion'):
-            treatment_plan.estimated_RTC = data['estimated_completion']
+        if data.get('duration'):
+            treatment_plan.duration = data['duration']
 
         detailed_plan = data.get('detailed_plan')
         if detailed_plan:
@@ -102,8 +102,7 @@ def get_appointments(request, athlete_id):
             "time": str(a.time),
             "trainer_id": a.trainer_id,
             "trainer_name": trainer_name,
-            "athlete_name": athlete_name,
-            "notes": a.notes,
+            "athlete_name": athlete_name
         })
 
     print(data)
@@ -183,7 +182,6 @@ def book_availability(request):
     slot_id = request.data.get('slot_id')
     athlete_id = request.data.get('athlete_id')
     appointment_type = request.data.get('appointment_type', 'treatment')  # default 30 min
-    notes = request.data.get('notes', '') 
 
     try:
         slot = TrainerAvailability.objects.get(id=slot_id)
@@ -203,8 +201,7 @@ def book_availability(request):
         trainer_id=slot.trainer_id,
         date=slot.date,
         time=slot.start_time,
-        appointment_type=appointment_type,
-        notes=notes
+        appointment_type=appointment_type
     )
 
     return Response({"success": True, "message": "Appointment created"})
@@ -302,3 +299,23 @@ def bulk_set_availability(request):
         "success": True,
         "message": f"Created {created_count} availability slots."
     })
+
+@api_view(['GET'])
+def fetchAllAthletes(request):
+
+    athletes = CustomUser.objects.filter(role='athlete')
+
+    athletes_data = []
+    for athlete in athletes:
+        athletes_data.append({
+            'id': athlete.id,
+            'username': athlete.username,
+            'first_name': athlete.first_name,
+            'last_name': athlete.last_name,
+            'email': athlete.email,
+            'role': athlete.role,
+            'phone': athlete.phone,
+            'sport': athlete.sport,
+            'clerk_id': athlete.clerk_id,
+        })
+    return JsonResponse(athletes_data, safe=False)

@@ -1,24 +1,50 @@
 import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Table, TableBody, TableCell, TableHead, TableRow } from "../ui/table";
-import { ClipboardList, ChevronRight, Activity } from "lucide-react";
+import { ClipboardList, ChevronRight, Activity, Search } from "lucide-react";
 import { ChevronDown, Trash2, Pencil, Home } from "lucide-react";
 import { Button } from "../ui/button";
+import { Input } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import tractionLogo from "../../assets/tractionLogoWhite2.png";
 import "./BrowseTreatmentPlan.css";
 
 const BrowseTreatmentPlans = () => {
+    const { assign, athlete_clerk_id } = useParams()
+    const assigning = assign || "false"
+
     const { user } = useUser();
     const [treatmentPlans, setTreatmentPlans] = useState([]);
+    const [filteredPlans, setFilteredPlans] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
     
     const editPlan = (id) => {
-        console.log(id);
         navigate(`/edit-treatment-plan/${id}`);
     }
+
+    const assignPlan = (plan_id, athlete_id) => {
+        console.log("Assign plan ", plan_id, "to", athlete_id)
+    }
+
+    useEffect(() => {
+        if (searchTerm.trim() === "") {
+            setFilteredPlans(treatmentPlans);
+            return;
+        }
+        
+        const lowercasedSearch = searchTerm.toLowerCase();
+        const filtered = treatmentPlans.filter(plan => 
+            plan.name.toLowerCase().includes(lowercasedSearch) || 
+            plan.injury.toLowerCase().includes(lowercasedSearch) || 
+            plan.trainer_name.toLowerCase().includes(lowercasedSearch)
+        );
+        
+        setFilteredPlans(filtered);
+    }, [searchTerm, treatmentPlans]);
+
 
     useEffect(() => {
         if (!user) return;
@@ -28,6 +54,7 @@ const BrowseTreatmentPlans = () => {
                 const response = await fetch(`http://localhost:8000/api/trainers/get-treatment-plans`);
                 const data = await response.json();
                 setTreatmentPlans(data.treatmentPlans);
+                setFilteredPlans(data.treatmentPlans);
                 setIsLoading(false);
             } catch (error) {
                 console.error("Error fetching treatment plans:", error);
@@ -37,6 +64,17 @@ const BrowseTreatmentPlans = () => {
 
         fetchTreatmentPlans();
     }, [user, navigate]);
+
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    // Reset search
+    const handleClearSearch = () => {
+        setSearchTerm("");
+    };
+
+
 
     if (isLoading) {
         return (
@@ -77,6 +115,29 @@ const BrowseTreatmentPlans = () => {
                     <Card className="treatment-card">
                         <CardHeader>
                             <CardTitle>Treatment Plans</CardTitle>
+                            <div className="search-container">
+                                <div className="search-input-wrapper">
+                                    <Search size={18} className="search-icon" />
+                                    <Input
+                                        type="text"
+                                        placeholder="Search by name, injury, or creator..."
+                                        value={searchTerm}
+                                        onChange={handleSearchChange}
+                                        className="search-input"
+                                    />
+                                    {searchTerm && (
+                                        <Button 
+                                            variant="ghost" 
+                                            size="sm" 
+                                            onClick={handleClearSearch}
+                                            className="clear-search-btn"
+                                        >
+                                            Clear
+                                        </Button>
+                                    )}
+                                </div>
+                                <br></br>
+                            </div>
                         </CardHeader>
                         <CardContent>
                             <Table className="data-table">
@@ -89,8 +150,8 @@ const BrowseTreatmentPlans = () => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {treatmentPlans.length > 0 ? (
-                                        treatmentPlans.map((plan, index) => (
+                                    {filteredPlans.length > 0 ? (
+                                        filteredPlans.map((plan, index) => (
                                             <TableRow key={index}>
                                                 <TableCell>{plan.name}</TableCell>
                                                 <TableCell>{plan.injury}</TableCell>
@@ -101,32 +162,29 @@ const BrowseTreatmentPlans = () => {
                                                             variant="ghost"
                                                             size="sm" 
                                                             onClick={() => editPlan(plan.id)}
+                                                            title="Edit Plan"
                                                         >
                                                             <Pencil size={16} />
                                                         </Button>
-                                                        {/* <Button 
-                                                            variant="ghost" 
-                                                            size="sm" 
-                                                            onClick={() => moveItem('treatments', index, 'down')}
-                                                            disabled={index === treatmentPlan.treatments.length - 1}
-                                                        >
-                                                            <ChevronDown size={16} />
-                                                        </Button>
+
                                                         <Button 
                                                             variant="ghost" 
                                                             size="sm" 
-                                                            onClick={() => deleteItem('treatments', index)}
+                                                            onClick={() => assignPlan(plan.id, athlete_clerk_id)}
+                                                            className="clear-search-btn"
+                                                            disabled={assigning}
+                                                            title="Assign to Athlete"
                                                         >
-                                                            <Trash2 size={16} />
-                                                        </Button> */}
+                                                            Clear
+                                                        </Button>
                                                     </div>
                                                 </TableCell>
                                             </TableRow>
                                         ))
                                     ) : (
                                         <TableRow>
-                                            <TableCell colSpan={3} className="empty-table-message">
-                                                No treatments added yet
+                                            <TableCell colSpan={4} className="empty-table-message">
+                                                {searchTerm ? "No matching treatment plans found" : "No treatments added yet"}
                                             </TableCell>
                                         </TableRow>
                                     )}

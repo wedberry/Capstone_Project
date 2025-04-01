@@ -175,6 +175,26 @@ const TrainerHome = () => {
               <p className="action-description">Set your schedule for upcoming dates</p>
             </CardContent>
           </Button>
+
+          <Button 
+            className="action-card green-card" 
+            onClick={() => navigate("/trainer/view-athletes")}
+          >
+            <CardHeader className="action-card-header">
+              <div className="action-card-title-row">
+                <div className="action-card-title-content">
+                  <div className="action-icon-container red-icon">
+                    <ClipboardList />
+                  </div>
+                  <CardTitle>Manage Athletes</CardTitle>
+                </div>
+                <ChevronRight className="action-chevron" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="action-description">View all athletes</p>
+            </CardContent>
+          </Button>
         </div>
 
         {/* Appointments & Notifications */}
