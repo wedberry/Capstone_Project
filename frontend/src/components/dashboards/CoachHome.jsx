@@ -1,7 +1,8 @@
 import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Calendar, Users, ClipboardList, Settings, Activity, UserCircle, MessageCircle, Bell } from "lucide-react";
+import { Calendar, Users, ClipboardList, Settings, Activity, UserCircle, MessageCircle, Bell, Trophy } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import tractionLogo from "../../assets/tractionLogoWhite2.png";
 import "./AthleteHome.css";
@@ -10,6 +11,10 @@ const CoachHome = () => {
   const { user } = useUser();
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [notifications, setNotifications] = useState([]);
+  const [standings, setStandings] = useState([]);
+  const [standingsLoading, setStandingsLoading] = useState(true);
+  const [standingsError, setStandingsError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,8 +64,26 @@ const CoachHome = () => {
       }
     };
 
+    const fetchStandings = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/system/standings/');
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to fetch standings');
+        }
+        const data = await response.json();
+        setStandings(data.standings);
+      } catch (err) {
+        console.error('Error fetching standings:', err);
+        setStandingsError(err.message);
+      } finally {
+        setStandingsLoading(false);
+      }
+    };
+
     if (user) {
       fetchUserData();
+      fetchStandings();
     }
   }, [user, navigate]);
 
@@ -110,17 +133,11 @@ const CoachHome = () => {
         </div>
       </div>
 
-
-    {/* First Row of Cards to view the players on your team */}
-
-
       <div className="dashboard-container">
         {/* Quick Actions */}
         <h2 className="section-title">Quick Actions</h2>
         <div className="quick-actions">
-
           {/* View Team Card */}
-
           <div className="action-card blue-card" onClick={() => navigate("/coach/players")}>
             <div className="action-card-header">
               <div className="action-card-title-row">
@@ -167,8 +184,116 @@ const CoachHome = () => {
             </div>
             <p className="action-description">View your notifications</p>
           </div>
-
         </div>
+
+        {/* Notifications Section */}
+        <h2 className="section-title">Recent Notifications</h2>
+        <Card className="info-card">
+          <CardHeader className="info-card-header">
+            <div className="info-card-title-row">
+              <div className="info-card-title">
+                <Bell className="info-card-icon blue-text" />
+                <CardTitle>Recent Notifications</CardTitle>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/coach/notifications")}
+                className="view-all-button red-button"
+              >
+                View All
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="info-card-content">
+            {notifications.length > 0 ? (
+              <ul className="notifications-list">
+                {notifications.slice(0, 4).map((notif) => (
+                  <li
+                    key={
+                      notif.id ||
+                      `notif-${notif.message?.substring(0, 10)}`
+                    }
+                    className="notification-item"
+                  >
+                    <div className="notification-content">
+                      <div className="notification-icon-container">
+                        <Bell className="notification-icon" />
+                      </div>
+                      <div className="notification-text">
+                        <p className="notification-message">{notif.message}</p>
+                        <p className="notification-time">
+                          {notif.timestamp
+                            ? new Date(notif.timestamp).toLocaleString()
+                            : "Just now"}
+                        </p>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="empty-state">
+                <Bell className="empty-state-icon" />
+                <p className="empty-state-text">You're all caught up!</p>
+                <p className="empty-state-subtext">
+                  No new notifications at this time
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Standings Section */}
+        <h2 className="section-title">Conference Standings</h2>
+        <Card className="standings-card">
+          <CardHeader className="standings-header">
+            <div className="header-content">
+              <Trophy className="header-icon" />
+              <CardTitle>SSC Men's Lacrosse Standings</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {standingsLoading ? (
+              <div className="loading-state">Loading standings...</div>
+            ) : standingsError ? (
+              <div className="error-state">
+                <p>Error loading standings:</p>
+                <p className="error-message">{standingsError}</p>
+                <button 
+                  className="retry-button"
+                  onClick={() => window.location.reload()}
+                >
+                  Retry
+                </button>
+              </div>
+            ) : (
+              <div className="standings-table">
+                <div className="standings-header-row">
+                  <div className="standings-col school-col">School</div>
+                  <div className="standings-col">Conf</div>
+                  <div className="standings-col">Overall</div>
+                  <div className="standings-col">Pct</div>
+                  <div className="standings-col">Streak</div>
+                </div>
+                {standings.map((team, index) => (
+                  <div 
+                    key={team.school} 
+                    className={`standings-row ${index < 3 ? 'top-three' : ''}`}
+                  >
+                    <div className="standings-col school-col">{team.school}</div>
+                    <div className="standings-col">{team.conf}</div>
+                    <div className="standings-col">{team.overall}</div>
+                    <div className="standings-col">{team.pct}</div>
+                    <div className={`standings-col ${team.streak.startsWith('W') ? 'winning' : 'losing'}`}>
+                      {team.streak}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

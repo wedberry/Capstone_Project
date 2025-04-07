@@ -136,6 +136,7 @@ function App() {
                 } 
               />
 
+        
         <Route
           path="/trainer/set-availability"
           element={
@@ -207,6 +208,7 @@ function App() {
             </SignedIn>
           }
         />
+
         {/* 🚫 Redirect Logged-Out Users to Sign-In */}
         <Route
           path="/protected"
