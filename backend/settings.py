@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-6plrn9bq78rip1rafqvra%pk)2hfzkr*%zl3gg$^gveo#!$i9j
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -59,9 +59,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = False  # Make sure this is False
+CORS_ALLOW_ALL_ORIGINS = True  # Temporarily allow all origins for development
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React app
+    "https://sunshinestateconference.com",  # SSC website
 ]
 
 CORS_ALLOW_METHODS = [
