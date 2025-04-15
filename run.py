@@ -8,6 +8,8 @@ BACKEND_DIR = os.path.join(os.getcwd(), "backend")
 FRONTEND_DIR = os.path.join(os.getcwd(), "frontend")
 backend_process = None
 frontend_process = None
+worker_process = None
+beat_process = None
 
 def start_backend():
     global backend_process
@@ -69,24 +71,62 @@ def stop_servers():
         print("Stopping React frontend...")
         frontend_process.terminate()
         frontend_process.wait()
+        
+    if worker_process:
+        print("Stopping Celery worker...")
+        worker_process.terminate()
+        worker_process.wait()
+        
+    if beat_process:
+        print("Stopping Celery beat scheduler...")
+        beat_process.terminate()
+        beat_process.wait()
+
+def start_celery():
+    """Start the Celery worker and beat scheduler."""
+    print("Starting Celery worker and beat scheduler...")
+    
+    # Start the Celery worker
+    worker_process = subprocess.Popen(
+        ["celery", "-A", "system.celery", "worker", "--loglevel=info"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    
+    # Start the Celery beat scheduler
+    beat_process = subprocess.Popen(
+        ["celery", "-A", "system.celery", "beat", "--loglevel=info"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    
+    return worker_process, beat_process
 
 if __name__ == "__main__":
     try:
         start_backend()
         time.sleep(5)  # Give Django time to start
         start_frontend()
-        # Only enter the loop if both processes started successfully
-        if backend_process and frontend_process:
-            print("Both backend and frontend are running. Press Ctrl+C to stop.")
-            while backend_process.poll() is None and frontend_process and frontend_process.poll() is None:
+        time.sleep(5)  # Give React time to start
+        start_celery()
+        # Only enter the loop if all processes started successfully
+        if backend_process and frontend_process and worker_process and beat_process:
+            print("All servers started successfully.")
+            print("Press Ctrl+C to stop all servers.")
+            
+            # Keep the script running
+            while True:
                 time.sleep(1)
         else:
-            print("Error: One or both servers failed to start.")
+            print("Error: One or more servers failed to start.")
             stop_servers()
 
     except KeyboardInterrupt:
         print("\nShutting down servers...")
         stop_servers()
         print("Servers stopped.")
+
 
 
