@@ -15,7 +15,27 @@ const CoachHome = () => {
   const [standings, setStandings] = useState([]);
   const [standingsLoading, setStandingsLoading] = useState(true);
   const [standingsError, setStandingsError] = useState(null);
+  const [sport, setSport] = useState("");
   const navigate = useNavigate();
+
+  const fetchStandings = async () => {
+    if (!sport) return; // Don't fetch if no sport is set
+    
+    try {
+      const response = await fetch(`http://localhost:8000/api/system/standings/?sport=${sport}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch standings');
+      }
+      const data = await response.json();
+      setStandings(data.standings);
+    } catch (err) {
+      console.error('Error fetching standings:', err);
+      setStandingsError(err.message);
+    } finally {
+      setStandingsLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -52,6 +72,7 @@ const CoachHome = () => {
         const userData = await userResponse.json();
         if (userData.exists) {
           setUserData(userData);
+          setSport(userData.sport || ""); // Set the sport from user data
         } else {
           console.error("User data not found");
           navigate("/create-account");
@@ -64,28 +85,18 @@ const CoachHome = () => {
       }
     };
 
-    const fetchStandings = async () => {
-      try {
-        const response = await fetch('http://localhost:8000/api/system/standings/');
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to fetch standings');
-        }
-        const data = await response.json();
-        setStandings(data.standings);
-      } catch (err) {
-        console.error('Error fetching standings:', err);
-        setStandingsError(err.message);
-      } finally {
-        setStandingsLoading(false);
-      }
-    };
-
     if (user) {
       fetchUserData();
-      fetchStandings();
     }
   }, [user, navigate]);
+
+  // Fetch standings when sport changes
+  useEffect(() => {
+    if (sport) {
+      setStandingsLoading(true);
+      fetchStandings();
+    }
+  }, [sport]);
 
   if (isLoading) {
     return (
@@ -245,55 +256,48 @@ const CoachHome = () => {
         </Card>
 
         {/* Standings Section */}
-        <h2 className="section-title">Conference Standings</h2>
-        <Card className="standings-card">
-          <CardHeader className="standings-header">
-            <div className="header-content">
-              <Trophy className="header-icon" />
-              <CardTitle>SSC Men's Lacrosse Standings</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {standingsLoading ? (
-              <div className="loading-state">Loading standings...</div>
-            ) : standingsError ? (
-              <div className="error-state">
-                <p>Error loading standings:</p>
-                <p className="error-message">{standingsError}</p>
-                <button 
-                  className="retry-button"
-                  onClick={() => window.location.reload()}
-                >
-                  Retry
-                </button>
-              </div>
-            ) : (
-              <div className="standings-table">
-                <div className="standings-header-row">
-                  <div className="standings-col school-col">School</div>
-                  <div className="standings-col">Conf</div>
-                  <div className="standings-col">Overall</div>
-                  <div className="standings-col">Pct</div>
-                  <div className="standings-col">Streak</div>
+        {sport && standings.length > 0 && !standingsError && (
+          <>
+            <h2 className="section-title">{sport.charAt(0).toUpperCase() + sport.slice(1)} Conference Standings</h2>
+            <Card className="standings-card">
+              <CardHeader className="standings-header">
+                <div className="header-content">
+                  <Trophy className="header-icon" />
+                  <CardTitle>SSC {sport.charAt(0).toUpperCase() + sport.slice(1)} Standings</CardTitle>
                 </div>
-                {standings.map((team, index) => (
-                  <div 
-                    key={team.school} 
-                    className={`standings-row ${index < 3 ? 'top-three' : ''}`}
-                  >
-                    <div className="standings-col school-col">{team.school}</div>
-                    <div className="standings-col">{team.conf}</div>
-                    <div className="standings-col">{team.overall}</div>
-                    <div className="standings-col">{team.pct}</div>
-                    <div className={`standings-col ${team.streak.startsWith('W') ? 'winning' : 'losing'}`}>
-                      {team.streak}
+              </CardHeader>
+              <CardContent>
+                {standingsLoading ? (
+                  <div className="loading-state">Loading standings...</div>
+                ) : (
+                  <div className="standings-table">
+                    <div className="standings-header-row">
+                      <div className="standings-col school-col">School</div>
+                      <div className="standings-col">Conf</div>
+                      <div className="standings-col">Overall</div>
+                      <div className="standings-col">Pct</div>
+                      <div className="standings-col">Streak</div>
                     </div>
+                    {standings.map((team, index) => (
+                      <div 
+                        key={team.school} 
+                        className={`standings-row ${index < 3 ? 'top-three' : ''}`}
+                      >
+                        <div className="standings-col school-col">{team.school}</div>
+                        <div className="standings-col">{team.conf}</div>
+                        <div className="standings-col">{team.overall}</div>
+                        <div className="standings-col">{team.pct}</div>
+                        <div className={`standings-col ${team.streak.startsWith('W') ? 'winning' : 'losing'}`}>
+                          {team.streak}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                )}
+              </CardContent>
+            </Card>
+          </>
+        )}
       </div>
     </div>
   );
