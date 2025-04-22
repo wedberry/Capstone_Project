@@ -57,3 +57,8 @@ coverage/
 *.a
 *.class
 db.sqlite3
+
+# Sensitive configuration files
+system/config.py
+backend/config.py
+**/config.py
