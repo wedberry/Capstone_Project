@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Calendar, Users, ClipboardList, Settings, Activity, UserCircle, MessageCircle, Bell, Trophy } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
-import tractionLogo from "../../assets/tractionLogoWhite2.png";
+import tractionLogo from "../../assets/TractionLogoText.png";
 import "./AthleteHome.css";
 
 const CoachHome = () => {
