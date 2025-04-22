@@ -18,7 +18,7 @@ export default function EditTreatmentPlan() {
     const [trainer, setTrainer] = useState(defaultName);
     const [treatment_plan_name, setTreatmentPlanName] = useState("");
     const [injury, setInjury] = useState("");
-    const [date, setDate] = useState(null);
+    const [duration, setDuration] = useState("");
 
     const JSON5 = require("json5");
 
@@ -63,12 +63,13 @@ export default function EditTreatmentPlan() {
             setTrainer(plan.trainer_name);
             setInjury(plan.injury);
 
-            if (plan.estimated_RTC) {
-                setDate(new Date(plan.estimated_RTC));
+            if (plan.duration) {
+                const days = parseInt(plan.duration.split(" ")[0]); // "5 00:00:00" → 5
+                setDuration(days.toString());
             }
 
             const detailedPlanJSON = safeJsonParse(plan.detailed_plan);
-            console.log(detailedPlanJSON)
+            console.log("Detailed Json plan", detailedPlanJSON)
 
             if (detailedPlanJSON) {
                 const exercisesArray = Object.entries(detailedPlanJSON.exercises || {}).map(([name, { reps, weight, notes }]) => ({
@@ -168,7 +169,7 @@ export default function EditTreatmentPlan() {
             treatment_plan_name: treatment_plan_name,
             trainer_name: trainer,
             injury: injury,
-            estimated_completion: date ? date.toISOString().split("T")[0] : null,
+            duration: duration ? `${duration} 00:00:00` : null,
             detailed_plan: {
                 exercises: exercisesObj,
                 treatments: treatmentsObj
@@ -207,7 +208,7 @@ export default function EditTreatmentPlan() {
                 treatment_plan_name: treatment_plan_name,
                 trainer_name: trainer,
                 injury: injury,
-                estimated_completion: date ? date.toISOString().split("T")[0] : null,
+                duration: duration ? `${duration} 00:00:00` : null,
                 detailed_plan: {
                     exercises: exercisesObj,
                     treatments: treatmentsObj
@@ -276,10 +277,14 @@ export default function EditTreatmentPlan() {
                         </div>
                         <br />
                         <div className="form-group">
-                            <label>Estimated Date of Completion:</label>
-                            <div className="calendar-wrapper">
-                                <Calendar selected={date} onChange={setDate} />
-                            </div>
+                            <label htmlFor="duration">Estimated Duration (days):</label>
+                            <Input 
+                                id="duration"
+                                type="number"
+                                min="0"
+                                value={duration}
+                                onChange={(e) => setDuration(e.target.value)}
+                            />
                         </div>
                     </CardContent>
                 </Card>

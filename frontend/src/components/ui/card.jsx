@@ -1,7 +1,14 @@
-export function Card({ children, className }) {
-    return <div className={`border p-4 rounded-lg shadow ${className}`}>{children}</div>;
-  }
-  
+export function Card({ children, className, onClick, ...rest }) {
+  return (
+    <div
+      className={`border p-4 rounded-lg shadow ${className}`}
+      onClick={onClick}
+      {...rest} // Spread any other props passed to Card
+    >
+      {children}
+    </div>
+  );
+}
   export function CardHeader({ children }) {
     return <div className="font-semibold text-lg mb-2">{children}</div>;
   }

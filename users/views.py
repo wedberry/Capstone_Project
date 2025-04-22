@@ -52,7 +52,7 @@ def create_user(request):
                 phone=data["phone"],
                 first_name=data["first_name"],
                 last_name=data["last_name"],
-                role=data["role"],
+                role=str(data["role"]).lower(),
                 sport=data["sport"],
             )
             return JsonResponse({"success": True})

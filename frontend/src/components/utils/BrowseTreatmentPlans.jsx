@@ -74,6 +74,27 @@ const BrowseTreatmentPlans = () => {
         setSearchTerm("");
     };
 
+    const deletePlan = async (plan_id) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this treatment plan?");
+        if (!confirmDelete) return;
+    
+        try {
+            const response = await fetch(`http://localhost:8000/api/trainers/delete-plan/${plan_id}/`, {
+                method: "DELETE",
+            });
+    
+            if (!response.ok) {
+                throw new Error("Failed to delete the treatment plan.");
+            }
+    
+            // Remove the deleted plan from state
+            setTreatmentPlans(prevPlans => prevPlans.filter(plan => plan.id !== plan_id));
+            setFilteredPlans(prevPlans => prevPlans.filter(plan => plan.id !== plan_id));
+        } catch (error) {
+            console.error("Error deleting plan:", error);
+            alert("There was a problem deleting the treatment plan.");
+        }
+    };
 
 
     if (isLoading) {
@@ -170,12 +191,11 @@ const BrowseTreatmentPlans = () => {
                                                         <Button 
                                                             variant="ghost" 
                                                             size="sm" 
-                                                            onClick={() => assignPlan(plan.id, athlete_clerk_id)}
+                                                            onClick={() => deletePlan(plan.id)}
                                                             className="clear-search-btn"
-                                                            disabled={assigning}
-                                                            title="Assign to Athlete"
+                                                            title="Delete"
                                                         >
-                                                            Clear
+                                                            <Trash2 size={16} />
                                                         </Button>
                                                     </div>
                                                 </TableCell>

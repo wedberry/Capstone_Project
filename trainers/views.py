@@ -57,8 +57,13 @@ def update_treatment_plan(request):
         treatment_plan.injury = data.get('injury', treatment_plan.injury)
 
         if data.get('duration'):
-            treatment_plan.duration = data['duration']
-
+            try:
+                days_str = data['duration'].split(' ')[0]  # Extract the number of days
+                days = int(days_str)
+                treatment_plan.duration = timedelta(days=days)
+            except (ValueError, IndexError):
+                return JsonResponse({"error": "Invalid duration format"}, status=400)
+            
         detailed_plan = data.get('detailed_plan')
         if detailed_plan:
             if isinstance(detailed_plan, dict):
@@ -326,3 +331,16 @@ def fetchAllAthletes(request):
             'clerk_id': athlete.clerk_id,
         })
     return JsonResponse(athletes_data, safe=False)
+
+
+@api_view(['GET', 'DELETE', 'OPTIONS'])
+def delete_plan(request, id):
+    try:
+        # get plan to delete
+        plan = TreatmentPlan.objects.get(id=id)
+        plan.delete()
+
+        return JsonResponse({"success": True}, status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": f"{e}"}, status=400)

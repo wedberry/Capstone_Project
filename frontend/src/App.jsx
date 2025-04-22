@@ -13,6 +13,7 @@ import AthleteHome from "./components/dashboards/AthleteHome";
 import ScheduleAppointment from "./components/utils/ScheduleAppointment";
 import AthleteProfile from "./components/utils/AthleteProfile";
 import AthleteNotification from "./components/utils/AthleteNotification";
+import ViewStatus from "./components/utils/ViewStatus";
 
 // Trainer Pages
 import TrainerHome from "./components/dashboards/TrainerHome";
@@ -22,6 +23,7 @@ import EditTreatmentPlan from "./components/utils/EditTreatmentPlan";
 import SetAvailability from "./components/utils/SetAvailability";
 import TrainerProfile from "./components/utils/TrainerProfile";
 import ViewAllAthletes from "./components/utils/ViewAllAthletes";
+import ManageAthlete from "./components/utils/ManageAthletePage";
 
 // Coach Pages
 import CoachHome from "./components/dashboards/CoachHome";
@@ -99,6 +101,15 @@ function App() {
           }
         />
 
+        <Route
+          path="/athlete/view-status"
+          element={
+            <SignedIn>
+                <ViewStatus />
+            </SignedIn>
+          }
+        />
+
         {/* 🔐 Trainer Routes */}
         <Route
           path="/trainer/dashboard"
@@ -163,6 +174,15 @@ function App() {
             </SignedIn>
           }
         />
+
+        <Route 
+          path="/manage-athlete/:athlete_id" 
+            element={
+              <SignedIn>
+                <ManageAthlete />
+              </SignedIn>
+                } 
+              />  
         
         {/* 🔐 Coach Routes */}   
         <Route

@@ -12,6 +12,7 @@ const AthleteHome = () => {
   const navigate = useNavigate();
 
   const [userData, setUserData] = useState(null);
+  const [status, setStatus] = useState("")
   const [appointments, setAppointments] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,6 +44,20 @@ const AthleteHome = () => {
       }
     };
 
+    const fetchStatus = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/athletes/get-status/${user.id}`
+        );
+        const data = await response.json();
+        console.log("Data: ", data)
+        setStatus(data);
+      } catch (error) {
+        console.error("Error fetching status:", error);
+      }
+    };
+
+
     const fetchAppointments = async () => {
       try {
         const response = await fetch(
@@ -70,9 +85,15 @@ const AthleteHome = () => {
     };
 
     fetchUserData();
+    fetchStatus();
     fetchAppointments();
     fetchNotifications();
   }, [user, navigate]);
+
+  useEffect(() => {
+    console.log("status updated:", status);
+    // Perform any actions that depend on the updated 'status' here
+  }, [status]);
 
   
   if (isLoading) {
@@ -93,13 +114,29 @@ const AthleteHome = () => {
     );
   }
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString, origin) => {
+    console.log("Date string:", dateString, "origin: ", origin)
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', { 
       weekday: 'short',
       month: 'short', 
       day: 'numeric'
     }).format(date);
+  };
+
+  const calculateProgress = (start, end) => {
+    const now = new Date();
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+  
+    const total = endDate - startDate;
+    const completed = now - startDate;
+
+    console.log("Start/end", startDate, endDate)
+  
+    if (total <= 0) return 100;
+  
+    return Math.min(100, Math.max(0, Math.round((completed / total) * 100)));
   };
 
   // CHANGED: Decide how many appointments to show
@@ -136,7 +173,53 @@ const AthleteHome = () => {
       </div>
 
       <div className="dashboard-container">
-        {/* Quick Actions */}
+        
+        <h2 className="section-title">Your Status</h2>
+        <div className="status-section">
+            {status && (
+              <Card className="status-card">
+                <CardHeader>
+                  <CardTitle>Status</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div
+                    className={`status-label ${
+                      status.status === "healthy"
+                        ? "status-healthy"
+                        : status.status === "restricted"
+                        ? "status-restricted"
+                        : "status-injured"
+                    }`}
+                  >
+                    {status.status.charAt(0).toUpperCase() + status.status.slice(1)}
+                  </div>
+
+                  {(status.status === "out" || status.status === "restricted") && (
+                    <div className="progress-container">
+                      <div className="progress-labels">
+                        <span>{formatDate(status.date_of_injury, "date of injury")}</span>
+                        <span>{formatDate(status.estimated_rtc, "estimated rtc")}</span>
+
+                      </div>
+                      <div className="progress-bar-background">
+                        <div className="progress-bar-container">
+                        <div
+                          className="progress-bar-fill"
+                          style={{ width: `${100 - calculateProgress(status.date_of_injury, status.estimated_rtc)}%` }}
+                        ></div>
+                        </div>
+                      </div>
+                      <p className="progress-percentage">
+                        {calculateProgress(status.date_of_injury, status.estimated_rtc)}% complete
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
+      {/* Quick Actions */}
         <h2 className="section-title">Quick Actions</h2>
         <div className="quick-actions">
           {/* Schedule Appointment Card (uses a button inside) */}
@@ -166,7 +249,7 @@ const AthleteHome = () => {
           {/* Treatment Plan Card */}
           <Card
             className="action-card green-card"
-            onClick={() => navigate("/treatment-plan")}
+            onClick={() => navigate("/athlete/view-status")}
           >
             <CardHeader className="action-card-header">
               <div className="action-card-title-row">
@@ -243,11 +326,11 @@ const AthleteHome = () => {
                       <div className="appointment-content">
                         <div className="appointment-date">
                           <div className="date-short">
-                            {formatDate(appt.date).split(" ")[0]}
+                            {formatDate(appt.date, "appt date 0").split(" ")[0]}
                           </div>
                           <div className="date-day">
-                            {formatDate(appt.date).split(" ")[1]}{" "}
-                            {formatDate(appt.date).split(" ")[2]}
+                            {formatDate(appt.date, "appt date 1").split(" ")[1]}{" "}
+                            {formatDate(appt.date, "appt date 2").split(" ")[2]}
                           </div>
                         </div>
                         <div className="appointment-details">

@@ -12,5 +12,6 @@ urlpatterns = [
     path('book-availability/', views.book_availability, name='book_availability'),
     path('set-availability/', views.set_availability, name='set_availability'),
     path('get-appointments/<str:athlete_id>/', views.get_appointments, name='get_appointments'),
-    path('fetchAllAthletes/', views.fetchAllAthletes, name='fetch_all_athletes')
+    path('fetchAllAthletes/', views.fetchAllAthletes, name='fetch_all_athletes'),
+    path('delete-plan/<int:id>/', views.delete_plan, name="delete_plan")
 ]

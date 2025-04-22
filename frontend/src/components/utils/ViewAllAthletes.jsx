@@ -13,7 +13,7 @@ const ViewAllAthletes = () => {
   const { user } = useUser();
   const navigate = useNavigate();
   const [ trainerData, setTrainerData ] = useState("");
-  const [ athletes, setAthletes ] = useState("") 
+  const [ athletes, setAthletes ] = useState([]) 
   const [filteredAthletes, setFilteredAthletes ] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -52,7 +52,8 @@ const ViewAllAthletes = () => {
 }, [searchTerm, athletes]);
 
   const handlePlayerClick = (playerId) => {
-    console.log(playerId);
+    console.log(playerId)
+    navigate(`/manage-athlete/${playerId}`)
   };
 
   const handleSearchChange = (e) => {
