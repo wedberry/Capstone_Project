@@ -3,7 +3,7 @@ import { useUser } from "@clerk/clerk-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SignIn.css";
-import tractionLogo from "../../assets/tractionLogoWhite2.png";
+import tractionLogo from "../../assets/TractionLogoText.png";
 
 const AccountCreationPage = () => {
   const { user, isLoaded } = useUser();
