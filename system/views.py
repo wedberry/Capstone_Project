@@ -8,6 +8,8 @@ from django.utils import timezone
 import requests
 from bs4 import BeautifulSoup
 import re
+from django.core.mail import send_mail
+from django.views.decorators.csrf import csrf_exempt
 
 @api_view(['GET'])
 def get_notifications(request, clerk_id):
@@ -122,4 +124,5 @@ def send_message(request):
         return JsonResponse({"error": "User not found"}, status=404)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
+
 

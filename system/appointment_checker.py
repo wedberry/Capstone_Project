@@ -2,10 +2,14 @@ import time
 import threading
 from datetime import datetime, timedelta
 from django.utils import timezone
+from django.http import JsonResponse
+from django.core.mail import send_mail
 from trainers.models import Appointment
 from system.models import Message
 from users.models import CustomUser
 import traceback
+import requests
+import json
 
 class AppointmentChecker:
     """
@@ -117,6 +121,7 @@ class AppointmentChecker:
                     # Get the trainer and athlete names
                     trainer_name = self._get_trainer_name(appointment.trainer_id)
                     athlete_name = self._get_athlete_name(appointment.athlete_id)
+                    athlete_email = self._get_athlete_email(appointment.athlete_id)
                     
                     # Send notification to athlete
                     self._send_notification(
@@ -131,6 +136,14 @@ class AppointmentChecker:
                         "trainer", 
                         f"You have an appointment with {athlete_name} in {minutes_until} minutes."
                     )
+
+                    self._send_email_notification(
+                        recipient=athlete_email,
+                        subject='Appointment Reminder',
+                        message=f'Reminder: You have an appointment with {trainer_name} in {minutes_until} minutes.'
+                    )
+
+
                     
                     # Mark this appointment as notified
                     self.notified_appointments.add(appointment.id)
@@ -163,10 +176,29 @@ class AppointmentChecker:
                 content=message_content
             )
             print(f"Notification sent to {recipient_type} {user_id}: {message_content}")
+            
+
+            
         except Exception as e:
             print(f"Error sending notification: {e}")
             traceback.print_exc()
+
+    def _send_email_notification(self, recipient, subject, message):
+        try:
+            send_mail(
+                subject,
+                message,
+                'tractionrollins1@gmail.com',
+                [recipient],
+                fail_silently=False,
+            )
+            print("Email sent successfully!")
+        except Exception as e:
+            print(f"Error sending email: {str(e)}")
+            traceback.print_exc()
+
             
+
     def _get_trainer_name(self, trainer_id):
         """Get the trainer's full name."""
         try:
@@ -182,3 +214,11 @@ class AppointmentChecker:
             return f"{athlete.first_name} {athlete.last_name}"
         except CustomUser.DoesNotExist:
             return "an athlete" 
+    
+    def _get_athlete_email(self, athlete_id):
+        """Get the athlete's email."""
+        try:
+            athlete = CustomUser.objects.get(clerk_id=athlete_id)
+            return athlete.email
+        except CustomUser.DoesNotExist:
+            return "athlete@example.com"
