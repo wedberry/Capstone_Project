@@ -118,9 +118,22 @@ def get_appointment_by_id(request, appt_id):
     try:
 
         appointment = Appointment.objects.get(id=appt_id)
+
+        try: 
+            trainer = CustomUser.objects.get(id=int(appointment.trainer_id))
+        except ValueError:
+            trainer = CustomUser.objects.get(clerk_id=appointment.trainer_id)
+        except Exception as e:
+            return JsonResponse({"error": f"{e}", "TrainerNotFound": True}, status=400)
+        
+        trainer_name = trainer.first_name + " " + trainer.last_name
+
         serializer = AppointmentSerializer(appointment)
 
-        return JsonResponse(serializer.data)
+        serializer_data = serializer.data
+        serializer_data["trainer_name"] = trainer_name
+
+        return JsonResponse(serializer_data)
 
     except Exception as e:
         return JsonResponse({"error": f"{e}"}, status=400)

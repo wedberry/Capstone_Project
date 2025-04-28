@@ -150,7 +150,7 @@ const formatDate = (dateString) => {
                   </div>
                   <div className="detail-content">
                     <div className="detail-label">Trainer</div>
-                    <div className="detail-value">Greg</div>
+                    <div className="detail-value">{appointment.trainer_name}</div>
                   </div>
                 </div>
                 
