@@ -225,7 +225,7 @@ function ScheduleAppointment() {
 
   return (
     <div className="schedule-appointment">
-      {/* Hero Section */}
+      {/* Hero section */}
       <div className="hero-section">
         <div className="hero-container">
           <div className="hero-content">
@@ -238,7 +238,7 @@ function ScheduleAppointment() {
             </div>
             <div className="hero-text">
               <h1>Schedule an Appointment</h1>
-              <p>Book a session with your preferred trainer</p>
+              <p>Book an appointment with your team's trainer</p>
             </div>
             <Button
               variant="ghost"

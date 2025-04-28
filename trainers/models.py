@@ -9,7 +9,6 @@ class TreatmentPlan(models.Model):
     detailed_plan = models.TextField() # a json object in the form {"exercises": {name = {"name": ex.name, "reps": ex.reps, "weight": ex.weight, "notes": ex.notes}, name2: {...}}, "treatments": {name = {"name": ex.name, "reps": ex.reps, "weight": ex.weight, "notes": ex.notes}, name2: {...}}} 
     duration = models.DurationField(default=timedelta(days=14)) # Estimated Return to competition date
     trainer_name = models.CharField(max_length=64)
-    #trainers = models.OneToOneField('User')
 
     def __str__(self):
         return f"{self.name}"

@@ -51,11 +51,6 @@ def get_status(request, athlete_id):
     try:
         status_object = AthleteStatus.objects.get(athlete_id=athlete)
 
-        if status_object.treatment_plan_id:
-            response_id = status_object.treatment_plan_id.id
-        else:
-            response_id = None
-
 
         return JsonResponse({
             'athlete_id': athlete.id,
@@ -64,9 +59,10 @@ def get_status(request, athlete_id):
             'status': status_object.status,
             'injury': status_object.injury,
             'trainer_restrictions': status_object.trainer_restrictions,
-            'treatment_plan_id': response_id,
             'date_of_injury': status_object.date_of_injury,
             'estimated_rtc': status_object.estimated_RTC,
+            'detailed_plan': status_object.detailed_plan,
+            'trainer_name': status_object.trainer_name,
             'exists' : True
         }, status=200)
     
@@ -87,6 +83,8 @@ def get_status(request, athlete_id):
                 'treatment_plan_id': default_status.treatment_plan_id.id if status_object.treatment_plan_id else None,
                 'estimated_RTC': default_status.estimated_RTC,
                 'date_of_injury': default_status.date_of_injury,
+                'detailed_plan': default_status.detailed_plan,
+                'trainer_name': default_status.trainer_name,
                 'exists' : True
             }, status=200)
         
@@ -116,9 +114,13 @@ def update_status(request):
         status = request.data.get('status')
         injury = request.data.get('inj')  # Using 'inj' to match your frontend
         trainer_restrictions = request.data.get('restrictions') # Using 'restrictions'
-        treatment_plan_id = request.data.get('treatment_plan_id')
+
         estimated_RTC_str = request.data.get('estimated_return') # Using 'estimated_return'
         date_of_injury_str = request.data.get('date_of_injury')
+
+        detailed_plan = request.data.get('detailed_plan')
+
+        trainer_name = request.data.get('trainer_name')
 
         if status:
             if status in ['healthy', 'restricted', 'out']:
@@ -132,14 +134,8 @@ def update_status(request):
         if trainer_restrictions is not None:
             status_object.trainer_restrictions = trainer_restrictions
 
-        if treatment_plan_id is not None and treatment_plan_id != '':
-            try:
-                treatment_plan = TreatmentPlan.objects.get(id=int(treatment_plan_id))
-                status_object.treatment_plan_id = treatment_plan
-            except TreatmentPlan.DoesNotExist:
-                return JsonResponse({"error": "Treatment plan not found"}, status=404)
-        else:
-            status_object.treatment_plan_id = None
+        if detailed_plan is not None and detailed_plan != '':
+            status_object.detailed_plan = detailed_plan
 
         if estimated_RTC_str:
             try:
@@ -156,6 +152,9 @@ def update_status(request):
                 return JsonResponse({"error": "Invalid date format for date_of_injury (YYYY-MM-DD)"}, status=400)
         elif 'date_of_injury' in request.data and request.data['date_of_injury'] is None:
             status_object.date_of_injury = None
+
+        if trainer_name:
+            status_object.trainer_name = trainer_name
 
         status_object.save()
 

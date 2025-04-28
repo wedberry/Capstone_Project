@@ -14,6 +14,16 @@ class AthleteStatus(models.Model):
    status = models.CharField(max_length=10, choices=[('healthy', 'Healthy'), ('restricted', 'Restricted'), ('out', 'Out')], default='healthy')
    injury = models.CharField(max_length=64,null=True, default=None)
    trainer_restrictions= models.TextField(max_length=500, default='No Restrictions')
-   treatment_plan_id = models.ForeignKey(TreatmentPlan, on_delete=models.CASCADE, null=True, blank=True, default=None)
    estimated_RTC = models.DateField(null=True, default=None)
    date_of_injury = models.DateField(null=True, default=None)
+   #treatment_plan_id = models.ForeignKey(TreatmentPlan, on_delete=models.CASCADE, null=True, blank=True, default=None) # The template this was built off of
+   detailed_plan = models.TextField(null=True, default=None) # a json object in the form {"exercises": {name = {"name": ex.name, "reps": ex.reps, "weight": ex.weight, "notes": ex.notes}, name2: {...}}, "treatments": {name = {"name": ex.name, "reps": ex.reps, "weight": ex.weight, "notes": ex.notes}, name2: {...}}} 
+   trainer_name = models.CharField(max_length=64, null=True, default=None)
+
+
+"""
+injury = models.TextField() # a comma separated list of all inuries this treatment plan serves
+    detailed_plan = models.TextField() # a json object in the form {"exercises": {name = {"name": ex.name, "reps": ex.reps, "weight": ex.weight, "notes": ex.notes}, name2: {...}}, "treatments": {name = {"name": ex.name, "reps": ex.reps, "weight": ex.weight, "notes": ex.notes}, name2: {...}}} 
+    duration = models.DurationField(default=timedelta(days=14)) # Estimated Return to competition date
+    trainer_name = models.CharField(max_length=64)
+"""

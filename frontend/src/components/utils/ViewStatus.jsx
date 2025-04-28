@@ -24,10 +24,7 @@ const ViewStatus = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [treatment_plan_name, setTreatmentPlanName] = useState("");
   const [ trainer, setTrainer ] = useState("");
-  const [injury, setInjury] = useState("");
-  const [duration, setDuration] = useState(null);
 
   const JSON5 = require("json5");
 
@@ -36,15 +33,6 @@ const ViewStatus = () => {
     exercises: [],
     treatments: []
   });
-
-  const [activity, setActivity] = useState("");
-  const [reps, setReps] = useState("");
-  const [weight, setWeight] = useState("");
-  const [activityNotes, setActivityNotes] = useState("");
-
-  const [treatment, setTreatment] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [treatmentNotes, setTreatmentNotes] = useState("");
 
   const safeJsonParse = (jsonString) => {
     try {
@@ -88,9 +76,11 @@ const ViewStatus = () => {
         console.log("Get-status response:", data)
 
         setStatus(data.status);
-        setInj(data.inj);
+        setInj(data.injury);
         setTreatmentPlanId(data.treatment_plan_id);
         setRestrictions(data.trainer_restrictions);
+
+        setTrainer(data.trainer_name);
 
         if (data.date_of_injury != '') {
           setDateOfInjury(formatDateForInput(data.date_of_injury));
@@ -100,35 +90,7 @@ const ViewStatus = () => {
           setEstimatedReturn(formatDateForInput(data.estimated_rtc));
         }
 
-      } catch (error) {
-        setError("Failed to fetch athlete status");
-        console.error("Error:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-      fetchAthleteData()
-  }, [user, navigate]);
-
-const fetchTreatmentPlan = async (planId) => {
-      setIsLoading(true);
-
-      try {
-          console.log("Fetching Treatment Plan")
-          const response = await axios.get(`http://127.0.0.1:8000/api/trainers/get-single-treatment-plan/${planId}/`);
-          console.log("Response Data:", response.data)
-          const plan = response.data;
-      
-          setTreatmentPlanName(plan.name);
-          setTrainer(plan.trainer_name);
-          setInjury(plan.injury);
-
-          if (plan.duration) {
-              const days = parseInt(plan.duration.split(" ")[0]); // "5 00:00:00" → 5
-              setDuration(days.toString());
-          }
-
-          const detailedPlanJSON = safeJsonParse(plan.detailed_plan);
+        const detailedPlanJSON = safeJsonParse(data.detailed_plan);
           console.log("Detailed Json plan", detailedPlanJSON)
 
           if (detailedPlanJSON) {
@@ -158,20 +120,15 @@ const fetchTreatmentPlan = async (planId) => {
           }
 
       } catch (error) {
-          alert("Failed to load treatment plan.");
+        setError("Failed to fetch athlete status");
+        console.error("Error:", error);
       } finally {
-          setIsLoading(false);
+        setIsLoading(false);
       }
-  };
+    };
+      fetchAthleteData()
+  }, [user, navigate]);
 
-  useEffect(() => {
-
-    if (treatmentPlanId) {
-        fetchTreatmentPlan(treatmentPlanId);
-    } else {
-        console.log("No treatement plan")
-    }
-  }, [user, treatmentPlanId]);
 
  useEffect(() => {
     console.log("Status:", status)
@@ -236,10 +193,11 @@ const fetchTreatmentPlan = async (planId) => {
             </div>
             <Button
               variant="ghost"
-              className="profile-button"
-              onClick={() => navigate("/athlete/profile")}
+              className="home-button"
+              onClick={() => navigate("/athlete/dashboard")}
             >
-              <UserCircle size={24} />
+              <Home size={20} />
+              Home
             </Button>
           </div>
         </div>
@@ -290,28 +248,22 @@ const fetchTreatmentPlan = async (planId) => {
               </Card>
             )}
           </div>
-          { treatmentPlanId ? (
+          { treatmentPlan ? (
                 <div className="treatment-plan-details">
                     <h3> Treatment Plan Overview</h3>
                     <table className="treatment-plan-table">
 
                       <tbody>
-                        <tr>
-                          <td>Name</td>
-                          <td>{treatment_plan_name || 'N/A'}</td>
-                        </tr>
-                        <tr>
-                          <td>Injury</td>
-                          <td>{injury || 'N/A'}</td>
-                        </tr>
-                        <tr>
-                          <td>Duration</td>
-                          <td>{duration || 'N/A'} days</td>
-                        </tr>
-                        <tr>
-                          <td>Created By</td>
+                      <tr>
+                          <td>Your Trainer:</td>
                           <td>{trainer || 'N/A'}</td>
                         </tr>
+
+                        <tr>
+                          <td>Injury:</td>
+                          <td>{inj || 'N/A'}</td>
+                        </tr>
+                      
                       </tbody>
                     </table>
 

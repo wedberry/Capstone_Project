@@ -24,10 +24,11 @@ const ManageAthlete = () => {
   const [formData, setFormData] = useState({
     status: '',
     inj: '',
-    treatment_plan_id: '',
     restrictions: '',
     date_of_injury: '',
     estimated_return: '',
+    detailed_plan: '',
+    trainer_name: '',
   });
 
   const [trainer, setTrainer] = useState("");
@@ -112,11 +113,56 @@ const ManageAthlete = () => {
         setFormData({
           status: data.status || '',
           inj: data.injury || '',
-          treatment_plan_id: data.treatment_plan_id || '',
           restrictions: data.trainer_restrictions || '',
           date_of_injury: formatDateForInput(data.date_of_injury) || '',
           estimated_return: formatDateForInput(data.estimated_RTC) || '',
+          detailed_plan: data.detailed_plan || '',
+          trainer_name: data.trainer_name || '',
         });
+
+        const detailedPlanJSON = safeJsonParse(data.detailed_plan);
+
+        if (detailedPlanJSON) {
+            // Transform exercises object to array with consistent structure
+            const exercisesArray = Object.entries(detailedPlanJSON.exercises || {}).map(([name, details]) => {
+                // Ensure each exercise has all required fields
+                return {
+                    name,
+                    reps: details.reps || "",
+                    weight: details.weight || "",
+                    notes: details.notes || ""
+                };
+            });
+            
+            // Transform treatments object to array with consistent structure
+            const treatmentsArray = Object.entries(detailedPlanJSON.treatments || {}).map(([name, details]) => {
+                // Ensure each treatment has all required fields
+                return {
+                    name,
+                    quantity: details.quantity || "",
+                    notes: details.notes || ""
+                };
+            });
+
+            // Set the combined state
+            setTreatmentPlanDetails({
+                exercises: exercisesArray,
+                treatments: treatmentsArray
+            });
+
+            console.log("Treatment Plan Details set:", exercisesArray, treatmentsArray);
+        } else {
+            console.error("Invalid JSON format.");
+            // Set empty arrays if JSON parsing failed
+            setTreatmentPlanDetails({
+                exercises: [],
+                treatments: []
+            });
+        }
+
+        setTreatmentPlanExists(true);
+
+
       } catch (error) {
         setError("Failed to fetch athlete status");
         console.error("Error:", error);
@@ -224,6 +270,23 @@ const ManageAthlete = () => {
         [name]: value,
         estimated_return: estimatedReturn
       }));
+    
+    } else if (name === 'status' && value === 'healthy' ){
+        setFormData(prev => ({
+            ...prev,
+            ['status']: 'healthy',
+            ['inj']: '',
+            ['date_of_injury']: '',
+            ['estimated_return']: '',
+            ['detailed_plan']: '',
+          }));
+
+        setTreatmentPlanDetails({
+            exercises: [],
+            treatments: []
+        });
+
+        setTreatmentPlanExists(false);
     } else {
       setFormData(prev => ({
         ...prev,
@@ -316,90 +379,76 @@ const ManageAthlete = () => {
     setIsEditingTP(!isEditingTP);
   };
 
-  const handleUpdatePlan = async () => {
-        const exercisesObj = {};
-        const treatmentsObj = {};
-
-        // Iterate exercises array and add to exercises JSON
-        treatmentPlanDetails.exercises.forEach(ex => {
-            exercisesObj[ex.name] = {"name": ex.name, "reps": ex.reps, "weight": ex.weight,"notes": ex.notes}
-        });
-
-        // Interate treatments array and add to treatments JSON
-        treatmentPlanDetails.treatments.forEach(tr => {
-            treatmentsObj[tr.name] = {"name": tr.name, "quantity": tr.quantity, "notes": tr.notes};
-        });
-
-        
-        const data = {
-            treatment_plan_id : formData.treatment_plan_id,
-            treatment_plan_name: treatment_plan_name,
-            trainer_name: trainer,
-            injury: injury,
-            duration: duration ? `${duration} 00:00:00` : null,
-            detailed_plan: {
-                exercises: exercisesObj,
-                treatments: treatmentsObj
-            },
-        };
-
-        console.log(data);
-
-        try {
-            await axios.post("http://127.0.0.1:8000/api/trainers/update-treatment-plan/", data, {
-                headers: { "Content-Type": "application/json" },
-            });
-            alert("Treatment Plan Updated Successfully!");
-            setIsEditingTP(false);
-            } catch (error) {
-            console.error("Error creating treatment plan:", error);
-            alert("Failed to update treatment plan.");
-            }
-        };
-
   
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     
     try {
-      // Prepare the data payload with athlete ID and all required fields
-      const payload = {
-        athlete_id: athlete_id,
-        status: formData.status,
-        inj: formData.inj,
-        restrictions: formData.restrictions || null,
-        date_of_injury: formData.date_of_injury || null,
-        estimated_return: formData.estimated_return || null,
-        treatment_plan_id: formData.treatment_plan_id || null,
-        // Add treatment plan details if needed
-        // treatment_plan_details: treatmentPlanDetails
-      };
+        // Convert treatment plan details back to the expected format
+        const detailedPlan = {
+            exercises: {},
+            treatments: {}
+        };
+
+        // Convert exercises array to object format
+        treatmentPlanDetails.exercises.forEach(exercise => {
+            detailedPlan.exercises[exercise.name] = {
+            reps: exercise.reps,
+            weight: exercise.weight,
+            notes: exercise.notes
+            };
+        });
+
+        // Convert treatments array to object format
+        treatmentPlanDetails.treatments.forEach(treatment => {
+            detailedPlan.treatments[treatment.name] = {
+            quantity: treatment.quantity,
+            notes: treatment.notes
+            };
+        });
+
+        // Make sure we're using the current trainer name
+        const currentTrainerName = user?.fullName || formData.trainer_name || trainer;
+
+        // Prepare the data payload with athlete ID and all required fields
+        const payload = {
+            athlete_id: athlete_id,
+            status: formData.status,
+            inj: formData.inj,
+            restrictions: formData.restrictions || null,
+            date_of_injury: formData.date_of_injury || null,
+            estimated_return: formData.estimated_return || null,
+            detailed_plan: JSON.stringify(detailedPlan),
+            trainer_name: currentTrainerName, 
+
+        };
   
-      // Make API request to update athlete status
-      const response = await fetch(`http://localhost:8000/api/athletes/update-status/`, {
-        method: "PUT",
-        credentials: "include",
-        headers: { 
-          "Content-Type": "application/json" 
-        },
-        body: JSON.stringify(payload)
-      });
+        // Make API request to update athlete status
+        const response = await fetch(`http://localhost:8000/api/athletes/update-status/`, {
+            method: "PUT",
+            credentials: "include",
+            headers: { 
+            "Content-Type": "application/json" 
+            },
+            body: JSON.stringify(payload)
+        });
   
-      // Handle the response
-      const data = await response.json();
-      
-      if (data.success) {
-        // Update the local state with the new data
-        setAthleteStatus(prev => ({ 
-          ...prev, 
-          status: formData.status,
-          inj: formData.inj,
-          trainer_restrictions: formData.restrictions,
-          date_of_injury: formData.date_of_injury,
-          estimated_RTC: formData.estimated_return,
-          treatment_plan_id: formData.treatment_plan_id
-        }));
+        // Handle the response
+        const data = await response.json();
+        
+        if (data.success) {
+            // Update the local state with the new data
+            setAthleteStatus(prev => ({ 
+            ...prev, 
+            status: formData.status,
+            inj: formData.inj,
+            trainer_restrictions: formData.restrictions,
+            date_of_injury: formData.date_of_injury,
+            estimated_RTC: formData.estimated_return,
+            detailed_plan: formData.detailed_plan,
+            trainer_name: formData.trainer_name
+            }));
         
         // Exit edit mode
         setIsEditing(false);
@@ -553,7 +602,7 @@ const ManageAthlete = () => {
                     ))}
                   </select>
                 
-                {treatmentPlanExists && (
+                {treatment_plan_name !== "" && (
                   <div className="treatment-plan-details">
                     <h3>Selected Treatment Plan Overview</h3>
                     <table className="treatment-plan-table">
@@ -611,16 +660,7 @@ const ManageAthlete = () => {
                   <Pencil size={16} />
                 </Button>
                 
-                <Button 
-                  type="button"
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={handleUpdatePlan}
-                  disabled={!isEditingTP}
-                >
-                  <Save size={16} />
-                </Button>
-
+                
 
                 <div className="treatment-section">
                   <Card className="treatment-card">
@@ -817,10 +857,8 @@ const ManageAthlete = () => {
             <div className="form-actions">
               {isEditing && (
                 <>
-                    {isEditingTP && (
-                        <p>Please Save or Cancel changes to treatment plan before saving</p>
-                    )}
-                  <Button type="submit" className="save-button" disabled={isEditingTP}>
+
+                  <Button type="submit" className="save-button">
                     Save Changes
                   </Button>
                   <Button
