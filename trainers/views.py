@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from django.http import JsonResponse
 import json
 from .models import TreatmentPlan, TrainerAvailability, Appointment
-from .serializers import TreatmentPlanSerializer
+from .serializers import TreatmentPlanSerializer, AppointmentSerializer
 from users.models import CustomUser
 from datetime import datetime, timedelta
 
@@ -112,6 +112,19 @@ def get_appointments(request, athlete_id):
 
     print(data)
     return Response({"appointments": data})
+
+@api_view(['GET'])
+def get_appointment_by_id(request, appt_id):
+    try:
+
+        appointment = Appointment.objects.get(id=appt_id)
+        serializer = AppointmentSerializer(appointment)
+
+        return JsonResponse(serializer.data)
+
+    except Exception as e:
+        return JsonResponse({"error": f"{e}"}, status=400)
+
 
 @api_view(['POST'])
 def set_availability(request):

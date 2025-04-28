@@ -14,6 +14,7 @@ import ScheduleAppointment from "./components/utils/ScheduleAppointment";
 import AthleteProfile from "./components/utils/AthleteProfile";
 import AthleteNotification from "./components/utils/AthleteNotification";
 import ViewStatus from "./components/utils/ViewStatus";
+import AppointmentDetails from "./components/utils/AppointmentDetails";
 
 // Trainer Pages
 import TrainerHome from "./components/dashboards/TrainerHome";
@@ -109,6 +110,15 @@ function App() {
             </SignedIn>
           }
         />
+
+        <Route 
+          path="/appointment-details/:appt_id" 
+            element={
+              <SignedIn>
+                <AppointmentDetails />
+              </SignedIn>
+                } 
+              />
 
         {/* 🔐 Trainer Routes */}
         <Route

@@ -1,0 +1,393 @@
+
+/* Hero section
+.hero-section {
+    background: linear-gradient(to right, #3b82f6, #4f46e5);
+    color: white;
+    padding: 32px 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .hero-content {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 16px;
+  }
+  
+  .hero-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+  }
+  
+  .hero-logo-image {
+    height: 60px;
+    width: auto;
+    filter: brightness(0) invert(1);
+  }
+  
+  .hero-text {
+    text-align: left;
+    flex: 1;
+  }
+  
+  .hero-text h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+    text-align: left;
+  }
+  
+  .hero-text p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 4px 0 0 0;
+    text-align: left;
+  }
+  
+  .home-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    margin-left: auto;
+  }
+  
+  .home-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+  } */
+
+  /* AppointmentDetails.css */
+
+/* General page layout */
+.player-list-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f5f5f7;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  
+  /* Hero Section Styling */
+  .hero-section {
+    background-color: #1a1a2e;
+    color: white;
+    padding: 1.5rem 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  
+  .hero-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .hero-logo {
+    display: flex;
+    align-items: center;
+  }
+  
+  .hero-logo-image {
+    height: 40px;
+    margin-right: 1rem;
+  }
+  
+  .hero-text h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .home-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+  }
+  
+  .home-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Fix the class name typo from original code */
+  .appointment-details-containerr,
+  .appointment-details-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Calendar Style Appointment Display */
+  .appointment-card {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+  
+  .appointment-header {
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .appointment-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .appointment-subtitle {
+    color: #64748b;
+    font-size: 1rem;
+  }
+  
+  .appointment-body {
+    display: flex;
+    padding: 1.5rem;
+  }
+  
+  /* Calendar Icon */
+  .calendar-display {
+    display: flex;
+    flex-direction: column;
+    min-width: 90px;
+    height: 110px;
+    background-color: white;
+    border-radius: 8px;
+    border: 2px solid #e53e3e;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    margin-right: 1.5rem;
+  }
+  
+  .calendar-month {
+    background-color: #e53e3e;
+    color: white;
+    text-align: center;
+    padding: 4px 0;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+  }
+  
+  .calendar-day {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+  
+  /* Appointment Details */
+  .details-container {
+    flex: 1;
+  }
+  
+  .detail-row {
+    display: flex;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+  }
+  
+  .detail-icon {
+    color: #64748b;
+    margin-right: 0.75rem;
+    margin-top: 2px;
+  }
+  
+  .detail-content {
+    flex: 1;
+  }
+  
+  .detail-label {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 2px;
+  }
+  
+  .detail-value {
+    font-size: 1rem;
+    color: #1a1a2e;
+    font-weight: 500;
+  }
+  
+  .appointment-notes {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+  }
+  
+  .notes-label {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+  }
+  
+  .notes-content {
+    font-size: 0.95rem;
+    color: #334155;
+    line-height: 1.6;
+  }
+  
+  /* Action Buttons */
+  .action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eaeaea;
+  }
+  
+  .action-button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  
+  .cancel-button {
+    background-color: #f3f4f6;
+    color: #4b5563;
+    border: 1px solid #e5e7eb;
+  }
+  
+  .cancel-button:hover {
+    background-color: #e5e7eb;
+  }
+  
+  .reschedule-button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+  }
+  
+  .reschedule-button:hover {
+    background-color: #2563eb;
+  }
+  
+  /* Loading and Error States */
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f5f5f7;
+  }
+  
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #1a1a2e;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .loading-text {
+    color: #4a5568;
+    font-size: 1rem;
+  }
+  
+  .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f5f5f7;
+    padding: 2rem;
+    text-align: center;
+  }
+  
+  .error-message {
+    color: #e53e3e;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .error-button {
+    background-color: #1a1a2e;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .error-button:hover {
+    background-color: #2d2d4a;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .hero-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    
+    .home-button {
+      margin-top: 1rem;
+    }
+    
+    .appointment-body {
+      flex-direction: column;
+    }
+    
+    .calendar-display {
+      margin-right: 0;
+      margin-bottom: 1.5rem;
+      align-self: center;
+    }
+    
+    .action-buttons {
+      flex-direction: column;
+    }
+    
+    .action-button {
+      width: 100%;
+    }
+  }

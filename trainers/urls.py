@@ -13,5 +13,6 @@ urlpatterns = [
     path('set-availability/', views.set_availability, name='set_availability'),
     path('get-appointments/<str:athlete_id>/', views.get_appointments, name='get_appointments'),
     path('fetchAllAthletes/', views.fetchAllAthletes, name='fetch_all_athletes'),
-    path('delete-plan/<int:id>/', views.delete_plan, name="delete_plan")
+    path('delete-plan/<int:id>/', views.delete_plan, name="delete_plan"),
+    path('get-appointment-details/<int:appt_id>/', views.get_appointment_by_id, name="get_appointment_details")
 ]

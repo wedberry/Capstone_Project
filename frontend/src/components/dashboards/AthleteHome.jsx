@@ -95,6 +95,10 @@ const AthleteHome = () => {
     // Perform any actions that depend on the updated 'status' here
   }, [status]);
 
+  const viewApptDetails = (id) => {
+    navigate(`/appointment-details/${id}`);
+}
+
   
   if (isLoading) {
     return (
@@ -344,6 +348,7 @@ const AthleteHome = () => {
                         size="sm"
                         variant="outline"
                         className="details-button"
+                        onClick={() => viewApptDetails(appt.id)}
                       >
                         Details
                       </Button>
