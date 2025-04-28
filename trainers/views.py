@@ -7,6 +7,8 @@ from .models import TreatmentPlan, TrainerAvailability, Appointment
 from .serializers import TreatmentPlanSerializer, AppointmentSerializer
 from users.models import CustomUser
 from datetime import datetime, timedelta
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 
 @api_view(['GET', 'POST'])
 def save_treatment_plan(request):
@@ -370,3 +372,15 @@ def delete_plan(request, id):
 
     except Exception as e:
         return JsonResponse({"error": f"{e}"}, status=400)
+    
+@csrf_exempt
+@require_http_methods(["POST"])
+def cancel_appointment(request, appt_id):
+    try:
+        appointment = Appointment.objects.get(id=appt_id)
+        appointment.delete()
+        return JsonResponse({'success': True})
+    except Appointment.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Appointment not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)

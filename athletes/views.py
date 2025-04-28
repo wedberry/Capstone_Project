@@ -9,6 +9,9 @@ from django.utils import timezone
 import json
 from datetime import datetime, date
 from django.core.exceptions import ObjectDoesNotExist
+from django.views.decorators.http import require_http_methods
+from .models import Appointment
+from django.views.decorators.csrf import csrf_exempt
 
 @api_view(['GET'])
 def get_athlete_dashboard(request):
@@ -162,3 +165,13 @@ def update_status(request):
 
     except Exception as e:
         return JsonResponse({"error": f"{e}"}, status=400)
+
+@require_http_methods(["POST", "DELETE"])
+def cancel_appointment(request, appt_id):
+    try:
+        appointment = Appointment.objects.get(id=appt_id)
+        appointment.delete()  # if you want to delete it
+        # OR you can do appointment.status = 'Cancelled' and appointment.save()
+        return JsonResponse({'message': 'Appointment canceled successfully'}, status=200)
+    except Appointment.DoesNotExist:
+        return JsonResponse({'error': 'Appointment not found'}, status=404)

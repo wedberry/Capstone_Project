@@ -99,6 +99,35 @@ const formatDate = (dateString) => {
 
   const formattedDate = appointment?.date ? formatDate(appointment.date) : { day: 'N/A', month: 'N/A', fullDate: 'N/A' };
   const formattedTime = appointment?.time ? formatTime(appointment.time) : 'N/A';
+
+  const handleCancel = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/trainers/cancel-appointment/${appt_id}/`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (response.ok) {
+        alert("Appointment canceled successfully!");
+        navigate("/athlete/dashboard");  // Go back to dashboard
+      } else {
+        const data = await response.json();
+        alert(`Failed to cancel appointment: ${data.error}`);
+      }
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
+      alert("An unexpected error occurred.");
+    }
+  };
+  
+  const handleReschedule = () => {
+    navigate(`/athlete/reschedule/${appt_id}`); 
+    // ⮕ or wherever your rescheduling page is
+  };
+  
   return (
     <div className="player-list-page">
       {/* Hero Section */}
@@ -194,12 +223,12 @@ const formatDate = (dateString) => {
             </div>
             
             <div className="action-buttons">
-              <button className="action-button cancel-button">
-                Cancel Appointment
-              </button>
-              <button className="action-button reschedule-button">
-                Reschedule
-              </button>
+            <button className="action-button cancel-button" onClick={handleCancel}>
+                 Cancel Appointment
+            </button>
+            <button className="action-button reschedule-button" onClick={handleReschedule}>
+                  Reschedule
+           </button>
             </div>
           </div>
         )}

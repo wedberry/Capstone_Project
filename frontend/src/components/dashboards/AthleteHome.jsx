@@ -12,13 +12,28 @@ const AthleteHome = () => {
   const navigate = useNavigate();
 
   const [userData, setUserData] = useState(null);
-  const [status, setStatus] = useState("")
+  const [status, setStatus] = useState("");
   const [appointments, setAppointments] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // ADDED: Track whether we show all appointments or only the first 3
   const [showAllAppointments, setShowAllAppointments] = useState(false);
+
+  // FIXED: formatTime to include AM/PM clearly
+  const formatTime = (timeString) => {
+    if (!timeString) return "";
+    
+    const [hours, minutes] = timeString.split(":").map(Number);
+  
+    if (isNaN(hours) || isNaN(minutes)) return "";
+  
+    const period = hours >= 12 ? "PM" : "AM";
+    const formattedHours = hours % 12 || 12; // 0 -> 12
+    const formattedMinutes = minutes.toString().padStart(2, "0");
+  
+    return `${formattedHours}:${formattedMinutes} ${period}`;
+  };
+  
 
   useEffect(() => {
     if (!user) return;
@@ -34,8 +49,6 @@ const AthleteHome = () => {
         if (!data.exists) {
           console.log("No User found");
           navigate("/create-account");
-          // } else if (data.role !== "Athlete") {
-          //   navigate(`/${data.role}Dashboard`);
         } else {
           setUserData(data);
         }
@@ -50,13 +63,11 @@ const AthleteHome = () => {
           `http://localhost:8000/api/athletes/get-status/${user.id}`
         );
         const data = await response.json();
-        console.log("Data: ", data)
         setStatus(data);
       } catch (error) {
         console.error("Error fetching status:", error);
       }
     };
-
 
     const fetchAppointments = async () => {
       try {
@@ -90,16 +101,36 @@ const AthleteHome = () => {
     fetchNotifications();
   }, [user, navigate]);
 
-  useEffect(() => {
-    console.log("status updated:", status);
-    // Perform any actions that depend on the updated 'status' here
-  }, [status]);
-
   const viewApptDetails = (id) => {
     navigate(`/appointment-details/${id}`);
-}
+  };
 
-  
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric'
+    }).format(date);
+  };
+
+  const calculateProgress = (start, end) => {
+    const now = new Date();
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    const total = endDate - startDate;
+    const completed = now - startDate;
+
+    if (total <= 0) return 100;
+
+    return Math.min(100, Math.max(0, Math.round((completed / total) * 100)));
+  };
+
+  const displayedAppointments = showAllAppointments
+    ? appointments
+    : appointments.slice(0, 3);
+
   if (isLoading) {
     return (
       <div className="loading-container">
@@ -118,48 +149,14 @@ const AthleteHome = () => {
     );
   }
 
-  const formatDate = (dateString, origin) => {
-    console.log("Date string:", dateString, "origin: ", origin)
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', { 
-      weekday: 'short',
-      month: 'short', 
-      day: 'numeric'
-    }).format(date);
-  };
-
-  const calculateProgress = (start, end) => {
-    const now = new Date();
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-  
-    const total = endDate - startDate;
-    const completed = now - startDate;
-
-    console.log("Start/end", startDate, endDate)
-  
-    if (total <= 0) return 100;
-  
-    return Math.min(100, Math.max(0, Math.round((completed / total) * 100)));
-  };
-
-  // CHANGED: Decide how many appointments to show
-  const displayedAppointments = showAllAppointments
-    ? appointments
-    : appointments.slice(0, 3);
-
   return (
     <div className="athlete-dashboard">
-      {/* Hero section */}
+      {/* Hero Section */}
       <div className="hero-section">
         <div className="hero-container">
           <div className="hero-content">
             <div className="hero-logo">
-              <img
-                src={tractionLogo}
-                alt="Traction Logo"
-                className="hero-logo-image"
-              />
+              <img src={tractionLogo} alt="Traction Logo" className="hero-logo-image" />
             </div>
             <div className="hero-text">
               <h1>Welcome back, {userData.first_name}!</h1>
@@ -176,57 +173,58 @@ const AthleteHome = () => {
         </div>
       </div>
 
+      {/* Dashboard Container */}
       <div className="dashboard-container">
         
+        {/* Status Section */}
         <h2 className="section-title">Your Status</h2>
         <div className="status-section">
-            {status && (
-              <Card className="status-card">
-                <CardHeader>
-                  <CardTitle>Status</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div
-                    className={`status-label ${
-                      status.status === "healthy"
-                        ? "status-healthy"
-                        : status.status === "restricted"
-                        ? "status-restricted"
-                        : "status-injured"
-                    }`}
-                  >
-                    {status.status.charAt(0).toUpperCase() + status.status.slice(1)}
-                  </div>
+          {status && (
+            <Card className="status-card">
+              <CardHeader>
+                <CardTitle>Status</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div
+                  className={`status-label ${
+                    status.status === "healthy"
+                      ? "status-healthy"
+                      : status.status === "restricted"
+                      ? "status-restricted"
+                      : "status-injured"
+                  }`}
+                >
+                  {status.status.charAt(0).toUpperCase() + status.status.slice(1)}
+                </div>
 
-                  {(status.status === "out" || status.status === "restricted") && (
-                    <div className="progress-container">
-                      <div className="progress-labels">
-                        <span>{formatDate(status.date_of_injury, "date of injury")}</span>
-                        <span>{formatDate(status.estimated_rtc, "estimated rtc")}</span>
-
-                      </div>
-                      <div className="progress-bar-background">
-                        <div className="progress-bar-container">
+                {(status.status === "out" || status.status === "restricted") && (
+                  <div className="progress-container">
+                    <div className="progress-labels">
+                      <span>{formatDate(status.date_of_injury)}</span>
+                      <span>{formatDate(status.estimated_rtc)}</span>
+                    </div>
+                    <div className="progress-bar-background">
+                      <div className="progress-bar-container">
                         <div
                           className="progress-bar-fill"
                           style={{ width: `${100 - calculateProgress(status.date_of_injury, status.estimated_rtc)}%` }}
                         ></div>
-                        </div>
                       </div>
-                      <p className="progress-percentage">
-                        {calculateProgress(status.date_of_injury, status.estimated_rtc)}% complete
-                      </p>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-          </div>
+                    <p className="progress-percentage">
+                      {calculateProgress(status.date_of_injury, status.estimated_rtc)}% complete
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
 
-      {/* Quick Actions */}
+        {/* Quick Actions */}
         <h2 className="section-title">Quick Actions</h2>
         <div className="quick-actions">
-          {/* Schedule Appointment Card (uses a button inside) */}
+          {/* Schedule Appointment Card */}
           <Card className="action-card blue-card">
             <CardHeader className="action-card-header">
               <div className="action-card-title-row">
@@ -298,7 +296,7 @@ const AthleteHome = () => {
           </Card>
         </div>
 
-        {/* Appointments & Notifications */}
+        {/* Appointments and Notifications */}
         <div className="info-cards-container">
           {/* Appointments Section */}
           <Card className="info-card">
@@ -308,7 +306,6 @@ const AthleteHome = () => {
                   <Calendar className="info-card-icon blue-text" />
                   <CardTitle>Upcoming Appointments</CardTitle>
                 </div>
-                {/* ADDED: Toggling between 3 or all appointments */}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -319,6 +316,7 @@ const AthleteHome = () => {
                 </Button>
               </div>
             </CardHeader>
+
             <CardContent className="info-card-content">
               {appointments.length > 0 ? (
                 <ul className="appointments-list">
@@ -330,15 +328,14 @@ const AthleteHome = () => {
                       <div className="appointment-content">
                         <div className="appointment-date">
                           <div className="date-short">
-                            {formatDate(appt.date, "appt date 0").split(" ")[0]}
+                            {formatDate(appt.date).split(" ")[0]}
                           </div>
                           <div className="date-day">
-                            {formatDate(appt.date, "appt date 1").split(" ")[1]}{" "}
-                            {formatDate(appt.date, "appt date 2").split(" ")[2]}
+                            {formatDate(appt.date).split(" ")[1]} {formatDate(appt.date).split(" ")[2]}
                           </div>
                         </div>
                         <div className="appointment-details">
-                          <p className="appointment-time">{appt.time}</p>
+                          <p className="appointment-time">{formatTime(appt.time)}</p>
                           <p className="appointment-trainer">
                             with {appt.trainer_name}
                           </p>
@@ -389,15 +386,13 @@ const AthleteHome = () => {
                 </Button>
               </div>
             </CardHeader>
+
             <CardContent className="info-card-content">
               {notifications.length > 0 ? (
                 <ul className="notifications-list">
                   {notifications.slice(0, 4).map((notif) => (
                     <li
-                      key={
-                        notif.id ||
-                        `notif-${notif.message?.substring(0, 10)}`
-                      }
+                      key={notif.id || `notif-${notif.message?.substring(0, 10)}`}
                       className="notification-item"
                     >
                       <div className="notification-content">
@@ -428,6 +423,7 @@ const AthleteHome = () => {
             </CardContent>
           </Card>
         </div>
+
       </div>
     </div>
   );
