@@ -82,11 +82,12 @@
     align-items: center;
     justify-content: center;
     margin-right: 16px;
+    width: 100px
   }
   
   .hero-logo-image {
-    height: 60px;
-    width: auto;
+    height: auto;
+    width: 100%;
     filter: brightness(0) invert(1); /* Makes the logo white */
   }
   

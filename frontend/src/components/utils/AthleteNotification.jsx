@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { Card, CardContent } from "../ui/card";
-import { Bell } from "lucide-react";
+import { Button } from "../ui/button";
+import { Bell, UserCircle, Home } from "lucide-react";
+import tractionLogo from "../../assets/tractionLogoWhite2.png";
 import "./AthleteNotification.css";
 
 const AthleteNotification = () => {
   const { user } = useUser();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,6 +49,34 @@ const AthleteNotification = () => {
   }
 
   return (
+    <div className='athlete-notifications'>
+
+    {/* Hero section */}
+    <div className="hero-section">
+        <div className="hero-container">
+          <div className="hero-content">
+            <div className="hero-logo">
+              <img
+                src={tractionLogo}
+                alt="Traction Logo"
+                className="hero-logo-image"
+              />
+            </div>
+            <div className="hero-text">
+              <h1>Notifications</h1>
+              <p>View All Notifications</p>
+            </div>
+            <Button
+              variant="ghost"
+              className="home-button"
+              onClick={() => navigate("/athlete/dashboard")}
+            >
+              <Home size={20} />
+              Home
+            </Button>
+          </div>
+        </div>
+      </div>
     <div className="notification-container">
       <div className="notification-header">
         <Bell className="notification-icon" />
@@ -76,6 +108,7 @@ const AthleteNotification = () => {
           ))}
         </div>
       )}
+    </div>
     </div>
   );
 };

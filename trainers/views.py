@@ -14,12 +14,21 @@ from django.views.decorators.http import require_http_methods
 def save_treatment_plan(request):
     if request.method == "POST":
         data = json.loads(request.body)
+        
+        if data.get('duration'):
+            try:
+                days_str = data['duration'].split(' ')[0]  # Extract the number of days
+                days = int(days_str)
+                duration = timedelta(days=days)
+            except (ValueError, IndexError):
+                return JsonResponse({"error": "Invalid duration format"}, status=400)
+            
         TreatmentPlan.objects.create(
             name=data["treatment_plan_name"],
             trainer_name=data["trainer_name"],
             injury=data["injury"],
             detailed_plan=data["detailed_plan"],
-            duration=data["duration"],
+            duration=duration,
         )
         return JsonResponse({"success": True})
     

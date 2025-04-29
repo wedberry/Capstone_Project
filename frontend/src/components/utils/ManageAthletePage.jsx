@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Table, TableHead, TableCell, TableBody, TableRow } from "../ui/table";
 import { Input } from "../ui/button";
 import tractionLogo from "../../assets/tractionLogoWhite2.png";
-import "./Profile.css";
+import "./ManageAthletePage.css";
 
 const ManageAthlete = () => {
   const { user } = useUser();
@@ -115,7 +115,7 @@ const ManageAthlete = () => {
           inj: data.injury || '',
           restrictions: data.trainer_restrictions || '',
           date_of_injury: formatDateForInput(data.date_of_injury) || '',
-          estimated_return: formatDateForInput(data.estimated_RTC) || '',
+          estimated_return: formatDateForInput(data.estimated_rtc) || '',
           detailed_plan: data.detailed_plan || '',
           trainer_name: data.trainer_name || '',
         });
@@ -303,9 +303,7 @@ const ManageAthlete = () => {
     }));
   };
 
-  useEffect(() => {
-    console.log("Selected treatment plan (after update): ", formData.treatment_plan_id);
-  }, [formData.treatment_plan_id]);
+
 
   const addActivity = () => {
     if (activity && reps) {
@@ -468,6 +466,16 @@ const ManageAthlete = () => {
     }
   };
   
+  
+  useEffect(() => {
+    console.log("Athlete Status: ", athleteStatus);
+  }, [treatmentPlanExists])
+
+  useEffect(() => {
+    console.log("Est. Return : ", formData.estimated_return);
+  }, [formData.estimated_return])
+
+
   if (isLoading) {
     return (
       <div className="loading-container">
@@ -606,12 +614,7 @@ const ManageAthlete = () => {
                   <div className="treatment-plan-details">
                     <h3>Selected Treatment Plan Overview</h3>
                     <table className="treatment-plan-table">
-                      <thead>
-                        <tr>
-                          <th>Property</th>
-                          <th>Value</th>
-                        </tr>
-                      </thead>
+                    
                       <tbody>
                         <tr>
                           <td>Name</td>

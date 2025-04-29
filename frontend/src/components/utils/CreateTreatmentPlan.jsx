@@ -18,7 +18,7 @@ export default function TreatmentPlanForm() {
     const [trainer, setTrainer] = useState(defaultName);
     const [treatment_plan_name, setTreatmentPlanName] = useState("");
     const [injury, setInjury] = useState("");
-    const [date, setDate] = useState(null);
+    const [duration, setDuration] = useState(null);
 
     const [treatmentPlan, setTreatmentPlan] = useState({ 
         exercises: [], 
@@ -103,7 +103,7 @@ export default function TreatmentPlanForm() {
             treatment_plan_name: treatment_plan_name,
             trainer_name: trainer,
             injury: injury,
-            estimated_completion: date ? date.toISOString().split("T")[0] : null,
+            duration: duration,
             detailed_plan: {
                 exercises: exercisesObj,
                 treatments: treatmentsObj
@@ -141,7 +141,7 @@ export default function TreatmentPlanForm() {
                             </div>
                             <div className="hero-text">
                                 <h1>Create Treatment Plan</h1>
-                                <p>Design a personalized treatment plan for your athletes</p>
+                                <p>Design a treatment plan template for your athletes</p>
                             </div>
                             <Button
                                 variant="ghost"
@@ -169,7 +169,7 @@ export default function TreatmentPlanForm() {
                                     onChange={(e) => setTrainer(e.target.value)}
                                 />
                             </div>
-                            <br />
+                            {/* <br /> */}
                             <div className="form-group">
                                 <label htmlFor="plan-name">Treatment Plan Name:</label>
                                 <Input 
@@ -179,7 +179,7 @@ export default function TreatmentPlanForm() {
                                     onChange={e => setTreatmentPlanName(e.target.value)} 
                                 />
                             </div>
-                            <br />
+                            {/* <br /> */}
                             <div className="form-group">
                                 <label htmlFor="injury">Injury Treated:</label>
                                 <Input 
@@ -189,13 +189,17 @@ export default function TreatmentPlanForm() {
                                     onChange={e => setInjury(e.target.value)} 
                                 />
                             </div>
-                            <br />
+                            {/* <br /> */}
                             <div className="form-group">
-                                <label>Estimated Date of Completion:</label>
-                                <div className="calendar-wrapper">
-                                    <Calendar selected={date} onChange={setDate} />
-                                </div>
-                            </div>
+                                <label htmlFor="duration">Estimated Duration (days):</label>
+                                    <Input 
+                                        id="duration"
+                                        type="number"
+                                        min="0"
+                                        value={duration}
+                                        onChange={(e) => setDuration(e.target.value)}
+                                    />
+                        </div>
                         </CardContent>
                     </Card>
         
@@ -382,6 +386,9 @@ export default function TreatmentPlanForm() {
                     <div className="submit-container">
                         <Button onClick={handleSubmit} className="submit-button">
                             Submit Treatment Plan
+                        </Button>
+                        <Button onClick={() => navigate('/browse-treatment-plans')} className="cancel-button">
+                            Cancel
                         </Button>
                     </div>
                 </div>

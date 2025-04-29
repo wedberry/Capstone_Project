@@ -1,7 +1,7 @@
 import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, Calendar, ClipboardList, ChevronRight, Users, UserCircle } from "lucide-react";
+import { Bell, Calendar, ClipboardList, ChevronRight, Users, UserCircle, CalendarDays, UserPen } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import tractionLogo from "../../assets/tractionLogoWhite2.png";
@@ -136,7 +136,7 @@ const TrainerHome = () => {
 
         <div className="quick-actions">
           
-          <Button 
+          <Card 
             className="action-card green-card" 
             onClick={() => navigate("/browse-treatment-plans")}
           >
@@ -154,17 +154,19 @@ const TrainerHome = () => {
             <CardContent>
               <p className="action-description">Browse and Manage rehab programs</p>
             </CardContent>
-          </Button>
+          </Card>
 
-          <Button 
-            className="action-card green-card" 
+         
+          {/* Set Schedule */}
+          <Card 
+            className="action-card blue-card" 
             onClick={() => navigate("/trainer/set-availability")}
           >
             <CardHeader className="action-card-header">
               <div className="action-card-title-row">
                 <div className="action-card-title-content">
-                  <div className="action-icon-container red-icon">
-                    <ClipboardList />
+                  <div className="action-icon-container blue-icon">
+                    <CalendarDays />
                   </div>
                   <CardTitle>Set Your Schedule</CardTitle>
                 </div>
@@ -174,17 +176,17 @@ const TrainerHome = () => {
             <CardContent>
               <p className="action-description">Set your schedule for upcoming dates</p>
             </CardContent>
-          </Button>
+          </Card>
 
-          <Button 
-            className="action-card green-card" 
+          <Card 
+            className="action-card red-card" 
             onClick={() => navigate("/trainer/view-athletes")}
           >
             <CardHeader className="action-card-header">
               <div className="action-card-title-row">
                 <div className="action-card-title-content">
                   <div className="action-icon-container red-icon">
-                    <ClipboardList />
+                    <UserPen />
                   </div>
                   <CardTitle>Manage Athletes</CardTitle>
                 </div>
@@ -194,7 +196,7 @@ const TrainerHome = () => {
             <CardContent>
               <p className="action-description">View all athletes</p>
             </CardContent>
-          </Button>
+          </Card>
         </div>
 
         {/* Appointments & Notifications */}
@@ -288,35 +290,40 @@ const TrainerHome = () => {
               </div>
             </CardHeader>
             <CardContent className="info-card-content">
-              {notifications.length > 0 ? (
-                <ul className="notifications-list">
-                  {notifications.slice(0, 4).map((notif) => (
-                    <li 
-                      key={notif.id || `notif-${notif.message?.substring(0, 10)}`} 
-                      className="notification-item"
-                    >
-                      <div className="notification-content">
-                        <div className="notification-icon-container">
-                          <Bell className="notification-icon" />
-                        </div>
-                        <div className="notification-text">
-                          <p className="notification-message">{notif.message}</p>
-                          <p className="notification-time">
-                            {notif.timestamp ? new Date(notif.timestamp).toLocaleString() : "Just now"}
-                          </p>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="empty-state">
-                  <Bell className="empty-state-icon" />
-                  <p className="empty-state-text">You're all caught up!</p>
-                  <p className="empty-state-subtext">No new notifications at this time</p>
-                </div>
-              )}
-            </CardContent>
+             {notifications.length > 0 ? (
+               <ul className="notifications-list">
+                 {notifications.slice(0,4).map((notif) => (
+                   <li
+                     key={
+                       notif.id ||
+                       `notif-${notif.message?.substring(0, 10)}`
+                     }
+                     className="notification-item"
+                   >
+                     <div className="notification-content">
+                       <div className="notification-icon-container">
+                         <Bell className="notification-icon" />
+                       </div>
+                       <div className="notification-text">
+                         <p className="notification-message">{notif.message}</p>
+                         <p className="notification-time">
+                           {notif.date.slice(0, 5)} at {notif.time.slice(0, -3)}
+                         </p>
+                       </div>
+                     </div>
+                   </li>
+                 ))}
+               </ul>
+             ) : (
+               <div className="empty-state">
+                 <Bell className="empty-state-icon" />
+                 <p className="empty-state-text">You're all caught up!</p>
+                 <p className="empty-state-subtext">
+                   No new notifications at this time
+                 </p>
+               </div>
+             )}
+           </CardContent>
           </Card>
         </div>
       </div>
