@@ -124,8 +124,7 @@ const formatDate = (dateString) => {
   };
   
   const handleReschedule = () => {
-    navigate(`/athlete/reschedule/${appt_id}`); 
-    // ⮕ or wherever your rescheduling page is
+    navigate(`/athlete/reschedule/${appt_id}`, { state: { appointment } });
   };
   
   return (

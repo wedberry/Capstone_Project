@@ -15,7 +15,7 @@ import AthleteProfile from "./components/utils/AthleteProfile";
 import AthleteNotification from "./components/utils/AthleteNotification";
 import ViewStatus from "./components/utils/ViewStatus";
 import AppointmentDetails from "./components/utils/AppointmentDetails";
-
+import RescheduleAppointment from "./components/utils/RescheduleAppoinment";
 // Trainer Pages
 import TrainerHome from "./components/dashboards/TrainerHome";
 import CreateTreatmentPlan from "./components/utils/CreateTreatmentPlan";
@@ -84,6 +84,7 @@ function App() {
             </SignedIn>
           }
         />
+       <Route path="/athlete/reschedule/:appt_id" element={<RescheduleAppointment />} />
 
         <Route
           path="/athlete/profile"

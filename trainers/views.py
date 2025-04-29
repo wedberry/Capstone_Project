@@ -9,6 +9,8 @@ from users.models import CustomUser
 from datetime import datetime, timedelta
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from rest_framework import status
+
 
 @api_view(['GET', 'POST'])
 def save_treatment_plan(request):
@@ -384,3 +386,26 @@ def cancel_appointment(request, appt_id):
         return JsonResponse({'success': False, 'error': 'Appointment not found'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    
+@api_view(['PUT'])
+def reschedule_appointment(request):
+    try:
+        appt_id = request.data.get('appointment_id')
+        appointment = Appointment.objects.get(id=appt_id)
+
+        new_date = request.data.get('new_date')
+        new_time = request.data.get('new_time')
+
+        if not new_date or not new_time:
+            return Response({'error': 'New date and time are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        appointment.date = new_date
+        appointment.time = new_time
+        appointment.save()
+
+        return Response({'message': 'Appointment rescheduled successfully.'}, status=status.HTTP_200_OK)
+
+    except Appointment.DoesNotExist:
+        return Response({'error': 'Appointment not found.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

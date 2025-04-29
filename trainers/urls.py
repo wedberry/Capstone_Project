@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import cancel_appointment
+from .views import cancel_appointment, reschedule_appointment
 
 
 urlpatterns = [
@@ -18,4 +18,5 @@ urlpatterns = [
     path('delete-plan/<int:id>/', views.delete_plan, name="delete_plan"),
     path('get-appointment-details/<int:appt_id>/', views.get_appointment_by_id, name="get_appointment_details"),
     path('cancel-appointment/<int:appt_id>/', cancel_appointment, name='cancel-appointment'),
+    path('api/trainers/reschedule-appointment/<int:appt_id>/', reschedule_appointment, name='reschedule-appointment'),
 ]
