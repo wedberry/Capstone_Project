@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import { useUser } from "@clerk/clerk-react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Home, UserCircle, ChevronUp, ChevronDown, Trash2, Pencil, Save } from "lucide-react";
+import { Home, UserCircle, ChevronUp, ChevronDown, Trash2, Pencil, Save, Printer } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Table, TableHead, TableCell, TableBody, TableRow } from "../ui/table";
@@ -77,6 +77,31 @@ const ManageAthlete = () => {
       return '';
     }
   };
+
+  const download_pdf = (id) => {
+    fetch(`http://localhost:8000/api/trainers/generate_pdf/${athlete_id}`, {
+        method: 'GET',
+        credentials: "include",
+        
+    })
+    .then(res => {
+        if (!res.ok || res.headers.get("content-type") !== "application/pdf") {
+            throw new Error("Failed to fetch valid PDF");
+        }
+        return res.blob();
+    })
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${athleteStatus?.athlete_name}_treatement_plan.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    })
+    .catch(error => console.error("Download failed:", error));
+
+}
 
   // Calculate estimated return date based on injury date and duration
   const calculateEstimatedReturn = (injuryDate, durationDays) => {
@@ -661,6 +686,16 @@ const ManageAthlete = () => {
                   disabled={!isEditing}
                 >
                   <Pencil size={16} />
+                </Button>
+
+                <Button 
+                  type="button"
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => download_pdf(athlete_id)}
+                  disabled={isEditing}
+                >
+                  <Printer size={16} />
                 </Button>
                 
                 

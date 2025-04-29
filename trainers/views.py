@@ -1,11 +1,14 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import json
+from django.template.loader import render_to_string
+from xhtml2pdf import pisa
 from .models import TreatmentPlan, TrainerAvailability, Appointment
 from .serializers import TreatmentPlanSerializer, AppointmentSerializer
 from users.models import CustomUser
+from athletes.models import AthleteStatus
 from datetime import datetime, timedelta
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -14,7 +17,7 @@ from django.views.decorators.http import require_http_methods
 def save_treatment_plan(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        
+
         if data.get('duration'):
             try:
                 days_str = data['duration'].split(' ')[0]  # Extract the number of days
@@ -98,31 +101,72 @@ def update_treatment_plan(request):
 
 @api_view(['GET'])
 def get_appointments(request, athlete_id):
-    appts = Appointment.objects.filter(athlete_id=athlete_id)
-    data = []
-    for a in appts:
 
-        trainer_clerk_id = a.trainer_id
-        trainer = CustomUser.objects.get(clerk_id=trainer_clerk_id)
 
-        trainer_name = f"{trainer.first_name} {trainer.last_name}"
+   print(athlete_id)
 
-        athlete_clerk_id = a.athlete_id
-        athlete = CustomUser.objects.get(clerk_id=athlete_clerk_id)
 
-        athlete_name = f"{athlete.first_name} {athlete.last_name}"
+   today = datetime.today().date()
+   now = datetime.now().time()
 
-        data.append({
-            "id": a.id,
-            "date": str(a.date),
-            "time": str(a.time),
-            "trainer_id": a.trainer_id,
-            "trainer_name": trainer_name,
-            "athlete_name": athlete_name
-        })
 
-    print(data)
-    return Response({"appointments": data})
+   # print(f"Now: {now}, {today}")
+
+
+   appts = Appointment.objects.filter(athlete_id=athlete_id)
+
+
+   print(f"Appointments with athlete ID: {appts}")
+
+
+   trainer_appts = Appointment.objects.filter(trainer_id=athlete_id)
+
+
+   print(f"Appointments with trainer ID: {trainer_appts}")
+
+
+   appts = appts | trainer_appts
+
+
+   print(f"Combined Appointments: {appts}")
+ 
+   data = []
+   for a in appts:
+
+
+       # print(f"appt time: {a.time}, {a.date}")
+       # print(f"Future:{a.date > today}")
+       # print(f"Time: {a.time > now}")
+
+
+       if a.date > today or (a.date == today and a.time > now):
+           trainer_clerk_id = a.trainer_id
+           trainer = CustomUser.objects.get(clerk_id=trainer_clerk_id)
+
+
+           trainer_name = f"{trainer.first_name} {trainer.last_name}"
+
+
+           athlete_clerk_id = a.athlete_id
+           athlete = CustomUser.objects.get(clerk_id=athlete_clerk_id)
+
+
+           athlete_name = f"{athlete.first_name} {athlete.last_name}"
+
+
+           data.append({
+               "id": a.id,
+               "date": str(a.date),
+               "time": str(a.time),
+               "trainer_id": a.trainer_id,
+               "trainer_name": trainer_name,
+               "athlete_name": athlete_name
+           })
+
+
+   print(data)
+   return Response({"appointments": data})
+
 
 @api_view(['GET'])
 def get_appointment_by_id(request, appt_id):
@@ -393,3 +437,45 @@ def cancel_appointment(request, appt_id):
         return JsonResponse({'success': False, 'error': 'Appointment not found'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    
+
+@api_view(['GET','POST','OPTIONS'])
+def generate_pdf(request, id):
+    try: 
+        athlete = CustomUser.objects.get(id=int(id))
+    except ValueError:
+        athlete = CustomUser.objects.get(clerk_id=id)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+        
+    try:
+        obj = AthleteStatus.objects.get(athlete_id=athlete)
+        
+        # Parse the detailed_plan JSON string to a Python dictionary
+        detailed_plan = None
+        if obj.detailed_plan:
+            try:
+                detailed_plan = json.loads(obj.detailed_plan)
+                obj.detailed_plan = detailed_plan  # Replace string with dictionary
+            except (ValueError, TypeError):
+                pass  # Keep as string if there's an error
+
+        context = {
+            'object': obj,
+            'name': f"{athlete.first_name} {athlete.last_name}"
+        }
+
+        html = render_to_string('treatment_plan_pdf_template.html', context)
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="treatment_plan.pdf"'
+
+        pisa.CreatePDF(html, dest=response)
+
+        return response
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+                             
+
+
+

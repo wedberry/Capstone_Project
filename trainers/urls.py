@@ -18,4 +18,5 @@ urlpatterns = [
     path('delete-plan/<int:id>/', views.delete_plan, name="delete_plan"),
     path('get-appointment-details/<int:appt_id>/', views.get_appointment_by_id, name="get_appointment_details"),
     path('cancel-appointment/<int:appt_id>/', cancel_appointment, name='cancel-appointment'),
+    path('generate_pdf/<int:id>/', views.generate_pdf, name='generate_pdf'),
 ]

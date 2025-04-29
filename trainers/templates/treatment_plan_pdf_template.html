@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Treatment Plan - {{ name }}</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    .header {
+      background-color: #2563eb;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+    .logo {
+      max-width: 200px;
+      margin-bottom: 10px;
+    }
+    .athlete-info {
+      margin-bottom: 10px;
+    }
+    .status-label {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .status-healthy {
+      background-color: #10b981;
+      color: white;
+    }
+    .status-restricted {
+      background-color: #f59e0b;
+      color: white;
+    }
+    .status-injured {
+      background-color: #ef4444;
+      color: white;
+    }
+    
+    .treatment-section {
+      margin-top: 20px;
+    }
+    .treatment-overview {
+      margin-bottom: 10px;
+    }
+    .treatment-overview table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .treatment-overview td {
+      padding: 8px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .treatment-overview td:first-child {
+      font-weight: bold;
+      width: 30%;
+    }
+    .restrictions {
+      margin-bottom: 10px;
+    }
+    .restrictions textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      min-height: 80px;
+    }
+    .section-title {
+      border-bottom: 2px solid #2563eb;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+    }
+    table.data-table th,
+    table.data-table td {
+      border: 1px solid #d1d5db;
+      padding: 10px;
+      text-align: left;
+    }
+    table.data-table th {
+      background-color: #f3f4f6;
+      font-weight: bold;
+    }
+    .empty-table-message {
+      text-align: center;
+      color: #6b7280;
+      padding: 10px;
+    }
+    .page-break {
+      page-break-after: always;
+    }
+    @page {
+      size: letter;
+      margin: 2cm;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>Treatment Plan</h2>
+  </div>
+
+  <div class="athlete-info">
+    <h2>{{ name }}</h2>
+    
+    {% if object.status %}
+    <div class="status-label 
+      {% if object.status == 'healthy' %}status-healthy
+      {% elif object.status == 'restricted' %}status-restricted
+      {% else %}status-injured{% endif %}">
+      {{ object.status|title }}
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="treatment-overview">
+    <h3 class="section-title">Treatment Plan Overview</h3>
+    <table>
+      <tr>
+        <td>Trainer:</td>
+        <td>{{ object.trainer.get_full_name|default:"N/A" }}</td>
+      </tr>
+      <tr>
+        <td>Injury:</td>
+        <td>{{ object.injury|default:"N/A" }}</td>
+      </tr>
+      <tr>
+        <td>Date of Injury:</td>
+        <td>{{ object.date_of_injury|date:"F j, Y"|default:"N/A" }}</td>
+      </tr>
+      <tr>
+        <td>Estimated Return:</td>
+        <td>{{ object.estimated_RTC|date:"F j, Y"|default:"N/A" }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="restrictions">
+    <h3 class="section-title">Restrictions</h3>
+    <p>{{ object.trainer_restrictions|default:"No restrictions specified" }}</p>
+  </div>
+
+  <div class="treatment-section">
+    <h3 class="section-title">Treatment Plan Details</h3>
+
+    {% if object.detailed_plan.treatments %}
+    <h4>Treatments</h4>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Treatment</th>
+          <th>Quantity</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for name, treatment in object.detailed_plan.treatments.items %}
+        <tr>
+          <td>{{ name }}</td>
+          <td>{{ treatment.quantity }}</td>
+          <td>{{ treatment.notes }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="3" class="empty-table-message">No treatments added yet</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+    {% if object.detailed_plan.exercises %}
+    <h4>Exercises</h4>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Exercise</th>
+          <th>Reps</th>
+          <th>Weight</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for name, exercise in object.detailed_plan.exercises.items %}
+        <tr>
+          <td>{{ name }}</td>
+          <td>{{ exercise.reps }}</td>
+          <td>{{ exercise.weight }}</td>
+          <td>{{ exercise.notes }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="empty-table-message">No exercises added yet</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+</body>
+</html>

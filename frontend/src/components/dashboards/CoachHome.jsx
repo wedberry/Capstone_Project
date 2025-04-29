@@ -37,57 +37,52 @@ const CoachHome = () => {
     }
   };
 
+  
   useEffect(() => {
+    if (!user){
+      console.log("User Not detected");
+      return;
+    }
+
     const fetchUserData = async () => {
       try {
-        // First check if user exists and get their role
-        const checkResponse = await fetch(`http://localhost:8000/api/users/check-user/${user.id}`, {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        
-        const checkData = await checkResponse.json();
-        
-        if (!checkData.exists) {
-          navigate("/create-account");
-          return;
-        }
-
-        if (checkData.role.toLowerCase() !== "coach") {
-          const path = `/${checkData.role.toLowerCase()}/dashboard`;
-          navigate(path);
-          return;
-        }
-
-        // If user is a coach, fetch their full data
-        const userResponse = await fetch(`http://localhost:8000/api/users/get-user/${user.id}`, {
+        const response = await fetch(`http://localhost:8000/api/users/get-user/${user.id}`, {
           method: "GET",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
         });
-        
-        const userData = await userResponse.json();
-        if (userData.exists) {
-          setUserData(userData);
-          setSport(userData.sport || ""); // Set the sport from user data
-        } else {
-          console.error("User data not found");
+
+        const data = await response.json();
+        console.log(data);
+        if (!data || !data.id) {
+          console.log("No User found");
           navigate("/create-account");
+          // } else if (data.role !== "Trainer") {
+          //   navigate(`/${data.role}/dashboard`);
+        } else {
+          setUserData(data);
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
-        navigate("/create-account");
+        console.error("Error fetching user:", error);
+      }
+    };
+
+    const fetchNotifications = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/api/system/get-notifications/${user.id}`
+        );
+        const data = await response.json();
+        setNotifications(data.notifications);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (user) {
-      fetchUserData();
-    }
+    fetchUserData();
+    fetchNotifications();
   }, [user, navigate]);
 
   // Fetch standings when sport changes

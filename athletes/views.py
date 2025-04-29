@@ -11,7 +11,12 @@ from datetime import datetime, date
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.http import require_http_methods
 from .models import Appointment
+from system.models import Message
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.permissions import AllowAny
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.decorators import authentication_classes, permission_classes
+
 
 @api_view(['GET'])
 def get_athlete_dashboard(request):
@@ -97,8 +102,12 @@ def get_status(request, athlete_id):
         return JsonResponse({"error": f"{e}"}, status=400)
     
     
+@csrf_exempt
 @api_view(['PUT', 'POST', 'GET'])
+@authentication_classes([])
+@permission_classes([AllowAny])
 def update_status(request):
+    print("=== update_status view hit ===")
     try:
         athlete_id = request.data.get('athlete_id')
         athlete = CustomUser.objects.get(id=int(athlete_id))
@@ -160,6 +169,18 @@ def update_status(request):
             status_object.trainer_name = trainer_name
 
         status_object.save()
+
+        sport_coaches = CustomUser.objects.get(sport=athlete.sport, role="coach")
+        sender = CustomUser.objects.get(first_name="Edward", last_name="Berry")
+
+        message = Message.objects.create(
+            sender= sender,
+            recipients=sport_coaches,
+            recipient_type='coach',
+            content=f"{athlete.first_name} {athlete.last_name}'s status has been updated to {status_object.status}"
+        )
+
+        print(message)
 
         return JsonResponse({"success": True, "message": "Athlete status updated successfully"}, status=200)
 

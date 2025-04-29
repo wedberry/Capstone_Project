@@ -18,7 +18,7 @@ def get_notifications(request, clerk_id):
         user = CustomUser.objects.get(clerk_id=clerk_id)
         
         # If user is an athlete or trainer, show messages where their role matches recipient_type
-        messages = Message.objects.filter(recipient_type=user.role.lower())
+        messages = Message.objects.filter(recipients=user)
         
         notifications = []
         for msg in messages:
@@ -106,6 +106,43 @@ def send_message(request):
         
         message = Message.objects.create(
             sender=sender,
+            recipient_type=data.get('recipient_type'),
+            content=data.get('content')
+        )
+        
+        return JsonResponse({
+            "success": True,
+            "message": "Message sent successfully",
+            "data": {
+                "id": message.id,
+                "content": message.content,
+                "recipient_type": message.recipient_type,
+                "created_at": message.created_at.isoformat()
+            }
+        })
+    except CustomUser.DoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+
+@api_view(['POST'])
+def send_individual_message(request, recipient_id):
+    try:
+        try:
+            recipients = CustomUser.objects.filter(id=int(recipient_id))
+        except ValueError:
+            recipients = CustomUser.objects.filter(clerk_id=recipient_id)
+        except Exception as e:
+            return JsonResponse({"Player not found": True, "error": str(e)}, status=400)
+
+
+        data = json.loads(request.body)
+        sender = CustomUser.objects.get(clerk_id=data.get('clerk_id'))
+        
+        message = Message.objects.create(
+            sender=sender,
+            recipients=recipients,
             recipient_type=data.get('recipient_type'),
             content=data.get('content')
         )
