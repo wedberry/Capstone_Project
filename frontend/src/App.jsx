@@ -32,6 +32,7 @@ import PlayerList from "./components/utils/PlayerList";
 import CoachProfile from "./components/utils/CoachProfile";
 import Message from "./components/utils/Message";
 import Notifications from "./components/utils/Notifications";
+import ViewPlayerStatus from "./components/utils/ViewPlayerStatus";
 
 const ProtectedRoute = ({ element }) => {
   const { user } = useUser();
@@ -246,6 +247,14 @@ function App() {
             <SignedOut>
               <RedirectToSignIn />
             </SignedOut>
+          }
+        />
+        <Route 
+          path="/coach/view-player-status/:player_id"
+          element={
+            <SignedIn>
+              <ViewPlayerStatus />
+            </SignedIn>
           }
         />
 
