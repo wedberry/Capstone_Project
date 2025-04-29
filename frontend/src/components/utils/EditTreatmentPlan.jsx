@@ -6,7 +6,8 @@ import { Button, Input } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Table, TableBody, TableCell, TableHead, TableRow } from "../ui/table";
 import { Calendar } from "../ui/calendar";
-import { ChevronUp, ChevronDown, Trash2 } from "lucide-react";
+import { ChevronUp, ChevronDown, Trash2, Home } from "lucide-react";
+import tractionLogo from "../../assets/tractionLogoWhite2.png";
 import "./CreateTreatmentPlan.css";
 
 export default function EditTreatmentPlan() {
@@ -241,6 +242,31 @@ export default function EditTreatmentPlan() {
 
 
           return (
+            <div className="edit-treatment-plan">
+
+                    {/* Hero Section */}
+                    <div className="hero-section">
+                    <div className="hero-container">
+                        <div className="hero-content">
+                            <div className="hero-logo">
+                                <img src={tractionLogo} alt="Traction Logo" className="hero-logo-image" />
+                            </div>
+                            <div className="hero-text">
+                                <h1>Edit Treatment Plan</h1>
+                                <p>Modify or Duplicate an Existing Treatment Plan</p>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                className="home-button"
+                                onClick={() => navigate("/trainer/dashboard")}
+                            >
+                                <Home size={20} />
+                                Home
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+
             <div className="treatment-plan-container">
                 <Card className="patient-info-card">
                     <CardHeader>
@@ -451,6 +477,11 @@ export default function EditTreatmentPlan() {
                                     onChange={e => setReps(e.target.value)} 
                                 />
                                 <Input 
+                                    placeholder="Weight" 
+                                    value={weight} 
+                                    onChange={e => setWeight(e.target.value)} 
+                                />
+                                <Input 
                                     placeholder="Notes (optional)" 
                                     value={activityNotes} 
                                     onChange={e => setActivityNotes(e.target.value)} 
@@ -471,7 +502,11 @@ export default function EditTreatmentPlan() {
                     <Button onClick={handleUpdatePlan} className="submit-button">
                         Update Treatment Plan
                     </Button>
+                    <Button onClick={() => navigate('/browse-treatment-plans')} className="cancel-button">
+                            Cancel
+                        </Button>
                 </div>
+            </div>
             </div>
         );
     }

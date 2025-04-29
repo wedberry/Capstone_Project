@@ -177,12 +177,11 @@ const AthleteHome = () => {
       <div className="dashboard-container">
         
         {/* Status Section */}
-        <h2 className="section-title">Your Status</h2>
         <div className="status-section">
           {status && (
             <Card className="status-card">
               <CardHeader>
-                <CardTitle>Status</CardTitle>
+                <CardTitle>Your Status</CardTitle>
               </CardHeader>
               <CardContent>
                 <div
@@ -225,7 +224,9 @@ const AthleteHome = () => {
         <h2 className="section-title">Quick Actions</h2>
         <div className="quick-actions">
           {/* Schedule Appointment Card */}
-          <Card className="action-card blue-card">
+          <Card 
+                className="action-card blue-card"
+                onClick={() => navigate("/athlete/schedule-appointment")}>
             <CardHeader className="action-card-header">
               <div className="action-card-title-row">
                 <div className="action-card-title-content">
@@ -239,12 +240,12 @@ const AthleteHome = () => {
             </CardHeader>
             <CardContent>
               <p className="action-description">Book a session with your trainer</p>
-              <Button
+              {/* <Button
                 className="schedule-now-button"
                 onClick={() => navigate("/athlete/schedule-appointment")}
               >
                 Schedule Now
-              </Button>
+              </Button> */}
             </CardContent>
           </Card>
 
@@ -388,39 +389,40 @@ const AthleteHome = () => {
             </CardHeader>
 
             <CardContent className="info-card-content">
-              {notifications.length > 0 ? (
-                <ul className="notifications-list">
-                  {notifications.slice(0, 4).map((notif) => (
-                    <li
-                      key={notif.id || `notif-${notif.message?.substring(0, 10)}`}
-                      className="notification-item"
-                    >
-                      <div className="notification-content">
-                        <div className="notification-icon-container">
-                          <Bell className="notification-icon" />
-                        </div>
-                        <div className="notification-text">
-                          <p className="notification-message">{notif.message}</p>
-                          <p className="notification-time">
-                            {notif.timestamp
-                              ? new Date(notif.timestamp).toLocaleString()
-                              : "Just now"}
-                          </p>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="empty-state">
-                  <Bell className="empty-state-icon" />
-                  <p className="empty-state-text">You're all caught up!</p>
-                  <p className="empty-state-subtext">
-                    No new notifications at this time
-                  </p>
-                </div>
-              )}
-            </CardContent>
+             {notifications.length > 0 ? (
+               <ul className="notifications-list">
+                 {notifications.slice(0,4).map((notif) => (
+                   <li
+                     key={
+                       notif.id ||
+                       `notif-${notif.message?.substring(0, 10)}`
+                     }
+                     className="notification-item"
+                   >
+                     <div className="notification-content">
+                       <div className="notification-icon-container">
+                         <Bell className="notification-icon" />
+                       </div>
+                       <div className="notification-text">
+                         <p className="notification-message">{notif.message}</p>
+                         <p className="notification-time">
+                           {notif.date.slice(0, 5)} at {notif.time.slice(0, -3)}
+                         </p>
+                       </div>
+                     </div>
+                   </li>
+                 ))}
+               </ul>
+             ) : (
+               <div className="empty-state">
+                 <Bell className="empty-state-icon" />
+                 <p className="empty-state-text">You're all caught up!</p>
+                 <p className="empty-state-subtext">
+                   No new notifications at this time
+                 </p>
+               </div>
+             )}
+           </CardContent>
           </Card>
         </div>
 
